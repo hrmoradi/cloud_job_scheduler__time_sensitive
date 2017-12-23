@@ -15,7 +15,8 @@ maxScaleFactor=2
 #resources = "~input/resources.txt"
 resources = [[4,8,0,0,1],[16,64,0,0,2]] #core,mem,0,0,id
 duration=44 # duration of running the app
-firstOptionOnly=True
+firstOptionOnly=False
+MEO=True
 
 #sampleJob #            [s,[[e1],[e2],[e3]],d,b,id],
 #jobList = "~input/jobList.txt"
