@@ -1,9 +1,10 @@
+import random
 #jobCreator Constants
 capacity = 20
 load = 0.80
-NumberOfTimeIntervals=5
+NumberOfTimeInterval=10
 timeInterval=10
-maxRunTime=2 # number of time intervals
+maxRunTime=1.5 #
 vmCores = [2,4,8,16]
 deadLineMin =2 # to 2+1
 maxVMsize =16
@@ -11,6 +12,11 @@ maxVMoptions=3
 minScaleFactor=1.5
 maxScaleFactor=2
 
+switchCaseDic={ 2: random.randint(1,2),
+                       4: random.randint(1,2),
+                       8: 1,
+                       16: 1
+                       }
 
 
 #Scheduler Constants
@@ -19,7 +25,7 @@ resources = [[4,8,0,0,1],[16,64,0,0,2]] #core,mem,0,0,id
 duration=41 # duration of running the app
 firstOptionOnly=False
 MEO=True
-sleepTime =0
+sleepTime =0.1
 
 
 

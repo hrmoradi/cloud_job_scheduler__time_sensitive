@@ -6,7 +6,7 @@ import copy
 class ClassSchduler():
 
     def MainScheduler(jobList ):
-        print("MainScheduler")
+        print("\n\nMainScheduler")
         #print(len(Set.jobList))
 
         """
