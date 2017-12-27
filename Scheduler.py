@@ -3,182 +3,196 @@ import SchedulerEmulator.Settings as Set
 import time
 import copy
 
-class ClassSchduler():
+class ClassSchduler:
 
-    def MainScheduler(jobList ):
-        print("\n\nMainScheduler")
+    def MainScheduler(self,jobList ):
+        self.jobList=jobList
+        print("MainScheduler")
         #print(len(Set.jobList))
 
         """
         defining required constants and variables
         """
 
-        arrivalQueue = []
-        jobsFailed=[]
-        jobsAddressed=[]
-        jobsScaled=[]
+        self.arrivalQueue = []
+        self.jobsFailed=[]
+        self.jobsAddressed=[]
+        self.jobsScaled=[]
 
-        timeStamp = 0
-        nextJobArrival =0
+        self.timeStamp = 0
+        self.nextJobArrival =0
 
-        numVM=0
-        VMcore=1
-        rCore=0
-        rMem=1
+        self.numVM=0
+        self.VMcore=1
+        self.rCore=0
+        self.rMem=1
 
-        head=0
-        arrival=0
-        execs=1
-        runtime =2
-        deadline=2
-        bid=3
-        id = 4
+        self.head=0
+        self.arrival=0
+        self.execs=1
+        self.runtime =2
+        self.deadline=2
+        self.bid=3
+        self.id = 4
 
-        collectedBid=0
+        self.collectedBid=0
 
-        pools = {}
+        self.pools = {}
         for res in Set.resources:
-            pools[res[id]]=[]
+            self.pools[res[self.id]]=[]
 
         """
         Simulation Starts
         """
 
         for du in range(Set.duration):                    # for specified time
-            print("\nCurrent timeStamp: ",timeStamp," duration:",du)
-            print(" resources: ", Set.resources)
+            print("Current timeStamp: ",self.timeStamp)#," duration:",du)
+            if Set.debug:
+                print(" resources: ", Set.resources)
 
 
             """ reducing processing time & removing "finished" jobs *OOP: given pools dic, """
 
-            for key in pools.keys():                 # for each pool ( each resource) # key is ID of resource
-                thisPool=pools.get(key)
-                shouldBeRemoved = []                 # creating array of jobs which should be removed for each pool (each resource)
-                for job in thisPool:
+            for key in self.pools.keys():                 # for each pool ( each resource) # key is ID of resource
+                self.thisPool=self.pools.get(key)
+                self.shouldBeRemoved = []                 # creating array of jobs which should be removed for each pool (each resource)
+                for job in self.thisPool:
                     #reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
                     #print("b processtime",job)
                     job[1]=job[1]-1                  # reducing processing time
                     #print("a processtime",job)
                     if job[1]==0:                    # if job finished
-                        print("                         a VM will be removed from pool",key," job done with ID", job[3])
+                        if Set.debug:
+                            print("                         a VM will be removed from pool",key," job done with ID", job[3])
                         for res in Set.resources:    # returning used resource to pool
-                            if res[id]==key:
-                                res[rCore]=res[rCore]+job[0]
-                        shouldBeRemoved.append(job)  # collect jobs that SHOULD BE  removed
-                for job in shouldBeRemoved:
-                    thisPool.remove(job)             # remove collected jobs
+                            if res[self.id]==key:
+                                res[self.rCore]=res[self.rCore]+job[0]
+                        self.shouldBeRemoved.append(job)  # collect jobs that SHOULD BE  removed
+                for job in self.shouldBeRemoved:
+                    self.thisPool.remove(job)             # remove collected jobs
 
-            print(" resources: ", Set.resources)
+            if Set.debug:
+                print(" resources: ", Set.resources)
 
 
 
 
             """adding "new jobs" to arrivalQueue based on arrival time stamp of jobs *OOP: given current timeStamp, joblist"""
 
-            while (nextJobArrival<=timeStamp and len(Set.jobList)!=0):      # asses any job in list which received
-                print("     new jobs arrived with ID: ", Set.jobList[head][id]," arrival: ",Set.jobList[head][arrival])
-                moveToQueu = Set.jobList[head] # [0,[[1,2,21],[2,2,11],[4,2,7]],26,5,1],   [s,[[e1],[e2],[e3]],d,b,id],
-                arrivalQueue.append(moveToQueu)
-                del Set.jobList[head]
-                if len(Set.jobList)!=0:
-                    nextJobArrival = Set.jobList[head][arrival]  # assumptions: job are sorted based on arrival time on array
+            while (self.nextJobArrival<=self.timeStamp and len(self.jobList)!=0):      # asses any job in list which received
+                if Set.debug:
+                    print("     new jobs arrived with ID: ", self.jobList[self.head][self.id]," arrival: ",self.jobList[self.head][self.arrival])
+                self.moveToQueu = self.jobList[self.head] # [0,[[1,2,21],[2,2,11],[4,2,7]],26,5,1],   [s,[[e1],[e2],[e3]],d,b,id],
+                self.arrivalQueue.append(self.moveToQueu)
+                del self.jobList[self.head]
+                if len(self.jobList)!=0:
+                    self.nextJobArrival = self.jobList[self.head][self.arrival]  # assumptions: job are sorted based on arrival time on array
                 #print(Queu)
 
 
 
             """removing jobs which "deadline passed" from arrivalQueue  *OOP: given arrivalQueue"""
 
-            shouldBeRemoved = []
-            for job in arrivalQueue:                                 # remove dead jobs
-                exec2remove=[]
-                for execution in job[execs]:
-                    if ( (timeStamp+execution[runtime]-job[arrival]) > job[deadline]):
-                        print("     Execution will be Removed for job ID: ", job[id],"     ", (timeStamp+execution[runtime]) ,">", job[deadline],"     ",job)
-                        exec2remove.append(execution)
+            self.shouldBeRemoved = []
+            for job in self.arrivalQueue:                                 # remove dead jobs
+                self.exec2remove=[]
+                for execution in job[self.execs]:
+                    if ( (self.timeStamp+execution[self.runtime]-job[self.arrival]) > job[self.deadline]):
+                        if Set.debug:
+                            print("     Execution will be Removed for job ID: ", job[self.id],"     ", (self.timeStamp+execution[self.runtime]) ,">", job[self.deadline],"     ",job)
+                        self.exec2remove.append(execution)
                         if Set.firstOptionOnly:
-                            jobsFailed.append(job)
-                            shouldBeRemoved.append(job)
-                            print("           First Option only mode: JOB will be Removed with ID: ", job[id], "     ", job)
-                for exe in exec2remove:
-                    job[execs].remove(execution)
+                            self.jobsFailed.append(job)
+                            self.shouldBeRemoved.append(job)
+                            if Set.debug:
+                                print("           First Option only mode: JOB will be Removed with ID: ", job[self.id], "     ", job)
+                for exe in self.exec2remove:
+                    job[self.execs].remove(execution)
 
-                if (len(job[execs])==0):
-                    jobsFailed.append(job)
-                    print("           no Exec left: JOB will be Removed with ID: ", job[id],"     ",job)
-                    shouldBeRemoved.append(job)
-            for job in shouldBeRemoved:                     # may have problem with jobs with single option and First option exec !!!
-                 arrivalQueue.remove(job)
+                if (len(job[self.execs])==0):
+                    self.jobsFailed.append(job)
+                    if Set.debug:
+                        print("           no Exec left: JOB will be Removed with ID: ", job[self.id],"     ",job)
+                    self.shouldBeRemoved.append(job)
+            for job in self.shouldBeRemoved:                     # may have problem with jobs with single option and First option exec !!!
+                self.arrivalQueue.remove(job)
 
 
 
             """Sorting Queue *OOP: given arrivalQueue"""
 
             #Sorted Queue
-            arrivalQueue.sort(key=( lambda x: (( float(timeStamp+x[execs][head][runtime]-job[arrival])/float(x[deadline]) ) )+(x[bid]/float(10.0))),reverse=True )
+            self.arrivalQueue.sort(key=( lambda x: (( float(self.timeStamp+x[self.execs][self.head][self.runtime]-job[self.arrival])/float(x[self.deadline]) ) )+(x[self.bid]/float(Set.bidDegree))),reverse=True )
             #print(arrivalQueue)
 
 
 
             """evaluate and apply addressability of job and put in resource pool if addressable *OOP: given  arrivalQueue"""
 
-            evaluateScaleability=[]
-            shadowQueue =copy.deepcopy(arrivalQueue)
-            for waiting in shadowQueue:
-                print("\n     arrival queue head: ",waiting)
+            self.evaluateScaleability=[]
+            self.shadowQueue =copy.deepcopy(self.arrivalQueue)
+            for waiting in self.shadowQueue:
+                if Set.debug:
+                    print("\n     arrival queue head: ",waiting)
                 ### <<< evaluation
-                evaluateCurrentResource = copy.deepcopy(Set.resources) # copy resources so changes do not apply for evaluation
-                evaluateCurrentResource.sort(key=(lambda resource: (resource[rCore] - (waiting[execs][head][VMcore]))))#, reverse=True)
-                VMs2address = waiting[execs][head][numVM]
-                for i in range(VMs2address):
+                self.evaluateCurrentResource = copy.deepcopy(Set.resources) # copy resources so changes do not apply for evaluation
+                self.evaluateCurrentResource.sort(key=(lambda resource: (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))))#, reverse=True)
+                self.VMs2address = waiting[self.execs][self.head][self.numVM]
+                for i in range(self.VMs2address):
                     #print("VMs2address: ",VMs2address)
-                    for res in evaluateCurrentResource:
+                    for res in self.evaluateCurrentResource:
                         #print("res: ",res)
-                        if (res[rCore]>=(waiting[execs][head][VMcore])):
-                            VMs2address = VMs2address-1
+                        if (res[self.rCore]>=(waiting[self.execs][self.head][self.VMcore])):
+                            self.VMs2address = self.VMs2address-1
                             #print("if b res[rCore]",res[rCore])
-                            res[rCore]= res[rCore] - (waiting[execs][head][VMcore])
+                            res[self.rCore]= res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
                             #print("if a res[rCore]", res[rCore])
                             break
                     #print("for res end res[rCore]", res[rCore])
-                    evaluateCurrentResource.sort(key=(lambda resource: (resource[rCore] - (waiting[execs][head][VMcore]))))#,reverse=True)
+                    self.evaluateCurrentResource.sort(key=(lambda resource: (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))))#,reverse=True)
                 ### <<< end of evaluation
-                if VMs2address ==0:                   # all requested VMs can be addressed
-                    print("     current resources: ",Set.resources)
-                    print("     addressable job with ID: ", waiting[id]," numVMs requested: ",waiting[execs][head][numVM])
+                if self.VMs2address ==0:                   # all requested VMs can be addressed
+                    if Set.debug:
+                        print("     current resources: ",Set.resources)
+                    if Set.debug:
+                        print("     addressable job with ID: ", waiting[self.id]," numVMs requested: ",waiting[self.execs][self.head][self.numVM])
                     # return(True)
                     # this job is addressable so apply
                     # repeat the process and put in pool
                     # update the resources
                     ### >>> apply
-                    evaluateCurrentResource = copy.deepcopy(Set.resources)
+                    self.evaluateCurrentResource = copy.deepcopy(Set.resources)
                     #print("evaluateCurrentResource Second:",evaluateCurrentResource)
-                    evaluateCurrentResource.sort(key=(lambda resource: (resource[rCore] - (waiting[execs][head][VMcore]))))#, reverse=True)
-                    VMs2address = waiting[execs][head][numVM]
-                    for i in range(VMs2address):
-                        for res in evaluateCurrentResource:
-                            if (res[rCore] >= (waiting[execs][head][VMcore])):
-                                VMs2address = VMs2address - 1
+                    self.evaluateCurrentResource.sort(key=(lambda resource: (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))))#, reverse=True)
+                    self.VMs2address = waiting[self.execs][self.head][self.numVM]
+                    for i in range(self.VMs2address):
+                        for res in self.evaluateCurrentResource:
+                            if (res[self.rCore] >= (waiting[self.execs][self.head][self.VMcore])):
+                                self.VMs2address = self.VMs2address - 1
                                 #print("if b res[rCore]", res[rCore])
-                                res[rCore] = res[rCore] - (waiting[execs][head][VMcore])
+                                res[self.rCore] = res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
                                 #print("if a res[rCore]", res[rCore])
-                                reserved = pools[res[id]]
-                                reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
+                                self.reserved = self.pools[res[self.id]]
+                                self.reserved.append([waiting[self.execs][self.head][self.VMcore],waiting[self.execs][self.head][self.runtime],waiting[self.bid],waiting[self.id]])
                                 #print("res[id], reserved",res[id],res,reserved)
-                                pools[res[id]]=reserved
+                                self.pools[res[self.id]]=self.reserved
                                 break
-                        evaluateCurrentResource.sort(key=(lambda resource: (resource[rCore] - (waiting[execs][head][VMcore]))))#, reverse=True)
-                    evaluateScaleability.append(waiting) # this job is addressed and should be evaluated for Scalibility
-                    jobsAddressed.append(waiting)
-                    collectedBid=collectedBid+waiting[bid]
+                        self.evaluateCurrentResource.sort(key=(lambda resource: (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))))#, reverse=True)
+                    self.evaluateScaleability.append(waiting) # this job is addressed and should be evaluated for Scalibility
+                    self.jobsAddressed.append(waiting)
+                    self.collectedBid=self.collectedBid+waiting[self.bid]
                     #print("     collected bid ",collectedBid)
-                    arrivalQueue.remove(waiting)
+                    self.arrivalQueue.remove(waiting)
                     #print("     !2 check Scalability:",evaluateScaleability)
-                    Set.resources = copy.deepcopy(evaluateCurrentResource)
+                    Set.resources = copy.deepcopy(self.evaluateCurrentResource)
                     ### >>> end of apply
-                    print("     resources reduced: ", Set.resources)
+                    if Set.debug:
+                        print("     resources reduced: ", Set.resources)
                 else:
-                    print("     Job not addressable with ID: ", waiting[id])
-                    print("     current resources: ", Set.resources)
+                    if Set.debug:
+                        print("     Job not addressable with ID: ", waiting[self.id])
+                    if Set.debug:
+                        print("     current resources: ", Set.resources)
 
 
 
@@ -186,145 +200,156 @@ class ClassSchduler():
 
             if Set.MEO:
 
-                print("\n     Evaluate and apply scalability")
+                if Set.debug:
+                    print("\n     Evaluate and apply scalability")
                 time.sleep(Set.sleepTime)
-                notScaleable = []                 # first remove jobs with one execution option
-                for job in evaluateScaleability:
-                    print("         job in evaluate scalability: ",job)
-                    execsList= job[execs]
-                    if len(execsList) == 1:
-                        notScaleable.append(job)
-                for job in notScaleable:
-                    evaluateScaleability.remove(job)
+                self.notScaleable = []                 # first remove jobs with one execution option
+                for job in self.evaluateScaleability:
+                    if Set.debug:
+                        print("         job in evaluate scalability: ",job)
+                    self.execsList= job[self.execs]
+                    if len(self.execsList) == 1:
+                        self.notScaleable.append(job)
+                for job in self.notScaleable:
+                    self.evaluateScaleability.remove(job)
 
-                while len(evaluateScaleability)!=0:
+                while len(self.evaluateScaleability)!=0:
                     # evaluateScaleability.append([waiting]) # numVMs, numCores ?
 
-                    evaluateScaleability.sort(key=(
-                    lambda x: (float(x[execs][head][runtime]*x[execs][head][numVM]*x[execs][head][VMcore]) / float(x[execs][head+1][runtime]*x[execs][head+1][numVM]*x[execs][head+1][VMcore]))),
+                    self.evaluateScaleability.sort(key=(
+                    lambda x: (float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore]) / float(x[self.execs][self.head+1][self.runtime]*x[self.execs][self.head+1][self.numVM]*x[self.execs][self.head+1][self.VMcore]))),
                                       reverse=True)
-                    print("     id: ",evaluateScaleability[head][id]," Scalability Factor: ",(evaluateScaleability[head][execs][head][runtime]*evaluateScaleability[head][execs][head][numVM]*evaluateScaleability[head][execs][head][VMcore]) / float(evaluateScaleability[head][execs][head+1][runtime]*evaluateScaleability[head][execs][head+1][numVM]*evaluateScaleability[head][execs][head+1][VMcore]))
+                    if Set.debug:
+                        print("     id: ",self.evaluateScaleability[self.head][self.id]," Scalability Factor: ",(self.evaluateScaleability[self.head][self.execs][self.head][self.runtime]*self.evaluateScaleability[self.head][self.execs][self.head][self.numVM]*self.evaluateScaleability[self.head][self.execs][self.head][self.VMcore]) / float(self.evaluateScaleability[self.head][self.execs][self.head+1][self.runtime]*self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]*self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))
 
                     ### <<< evaluation
 
-                    shadowPools= copy.deepcopy(pools)
-                    shadowResources = copy.deepcopy(Set.resources)
+                    self.shadowPools= copy.deepcopy(self.pools)
+                    self.shadowResources = copy.deepcopy(Set.resources)
 
-                    for key in shadowPools.keys():  # for each pool ( each resource) # key is ID of resource
-                        thisPool = shadowPools.get(key)
-                        shouldBeRemoved = []  # creating array of jobs which should be removed for each pool (each resource)
-                        for job in thisPool:
+                    for key in self.shadowPools.keys():  # for each pool ( each resource) # key is ID of resource
+                        self.thisPool = self.shadowPools.get(key)
+                        self.shouldBeRemoved = []  # creating array of jobs which should be removed for each pool (each resource)
+                        for job in self.thisPool:
                             # reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
-                            if job[3] == evaluateScaleability[head][id]:  # if job finished
-                                print("                         remove from pool to evaluate resource: ", key, " job ID: " ,job[3]," head execs: ",evaluateScaleability[head][execs][head])
+                            if job[3] == self.evaluateScaleability[self.head][self.id]:  # if job finished
+                                if Set.debug:
+                                    print("                         remove from pool to evaluate resource: ", key, " job ID: " ,job[3]," head execs: ",self.evaluateScaleability[self.head][self.execs][self.head])
 
-                                for res in shadowResources:  # returning used resource to pool
-                                    if res[id] == key:
-                                        res[rCore] = res[rCore] + job[0]
-                                shouldBeRemoved.append(job)  # collect jobs that SHOULD BE  removed
-                        for job in shouldBeRemoved:
-                            thisPool.remove(job)  # remove collected jobs
+                                for res in self.shadowResources:  # returning used resource to pool
+                                    if res[self.id] == key:
+                                        res[self.rCore] = res[self.rCore] + job[0]
+                                self.shouldBeRemoved.append(job)  # collect jobs that SHOULD BE  removed
+                        for job in self.shouldBeRemoved:
+                            self.thisPool.remove(job)  # remove collected jobs
 
 
-                    VMs2address = evaluateScaleability[head][execs][head+1][numVM]
-                    shadowResources.sort(key=(lambda resource: (resource[rCore] - (evaluateScaleability[head][execs][head+1][VMcore]))))  # , reverse=True)
-                    for i in range(VMs2address):
+                    self.VMs2address = self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]
+                    self.shadowResources.sort(key=(lambda resource: (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
+                    for i in range(self.VMs2address):
                         # print("VMs2address: ",VMs2address)
-                        for res in shadowResources:
+                        for res in self.shadowResources:
                             # print("res: ",res)
-                            if (res[rCore] >= (evaluateScaleability[head][execs][head+1][VMcore])):
-                                VMs2address = VMs2address - 1
+                            if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])):
+                                self.VMs2address = self.VMs2address - 1
                                 # print("if b res[rCore]",res[rCore])
-                                res[rCore] = res[rCore] - (evaluateScaleability[head][execs][head+1][VMcore])
+                                res[self.rCore] = res[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
                                 # print("if a res[rCore]", res[rCore])
                                 break
                         # print("for res end res[rCore]", res[rCore])
-                        shadowResources.sort(key=(
-                        lambda resource: (resource[rCore] - (evaluateScaleability[head][execs][head+1][VMcore]))))  # ,reverse=True)
+                        self.shadowResources.sort(key=(
+                        lambda resource: (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # ,reverse=True)
 
                     ### <<< end of evaluation
 
-                    if VMs2address == 0:
+                    if self.VMs2address == 0:
                         ### >>> apply
-                        for key in pools.keys():  # for each pool ( each resource) # key is ID of resource
-                            thisPool = pools.get(key)
-                            shouldBeRemoved = []  # creating array of jobs which should be removed for each pool (each resource)
-                            for job in thisPool:
+                        for key in self.pools.keys():  # for each pool ( each resource) # key is ID of resource
+                            self.thisPool = self.pools.get(key)
+                            self.shouldBeRemoved = []  # creating array of jobs which should be removed for each pool (each resource)
+                            for job in self.thisPool:
                                 # reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
-                                if job[3] == evaluateScaleability[head][id]:  # if job finished
-                                    print("                         remove from pool (applicalable): resource: ", key, " job ID:", job[3],
-                                          " Execs: ", evaluateScaleability[head][execs][head+1])
-                                    shouldBeRemoved.append(job)
+                                if job[3] == self.evaluateScaleability[self.head][self.id]:  # if job finished
+                                    if Set.debug:
+                                        print("                         remove from pool (applicalable): resource: ", key, " job ID:", job[3],
+                                          " Execs: ", self.evaluateScaleability[self.head][self.execs][self.head+1])
+                                    self.shouldBeRemoved.append(job)
                                     for res in Set.resources:  # returning used resource to pool
-                                        if res[id] == key:
-                                            res[rCore] = res[rCore] + job[0]
+                                        if res[self.id] == key:
+                                            res[self.rCore] = res[self.rCore] + job[0]
                                       # collect jobs that SHOULD BE  removed
-                            for job in shouldBeRemoved:
-                                thisPool.remove(job)  # remove collected jobs
+                            for job in self.shouldBeRemoved:
+                                self.thisPool.remove(job)  # remove collected jobs
 
-                        print("         Scalability current resources: ", Set.resources)
-                        print("         Scalability addressable job with ID: ", evaluateScaleability[head][id], " numVMs requested: ",
-                              evaluateScaleability[head][execs][head+1][numVM])
+                        if Set.debug:
+                            print("         Scalability current resources: ", Set.resources)
+                            print("         Scalability addressable job with ID: ", self.evaluateScaleability[self.head][self.id], " numVMs requested: ",
+                              self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM])
 
-                        evaluateCurrentResource = copy.deepcopy(Set.resources)
+                        self.evaluateCurrentResource = copy.deepcopy(Set.resources)
                         # print("evaluateCurrentResource Second:",evaluateCurrentResource)
-                        evaluateCurrentResource.sort(key=(
-                        lambda resource: (resource[rCore] - (evaluateScaleability[head][execs][head+1][VMcore]))))  # , reverse=True)
-                        VMs2address = evaluateScaleability[head][execs][head+1][numVM]
-                        for i in range(VMs2address):
-                            for res in evaluateCurrentResource:
-                                if (res[rCore] >= (evaluateScaleability[head][execs][head+1][VMcore])):
-                                    VMs2address = VMs2address - 1
+                        self.evaluateCurrentResource.sort(key=(
+                        lambda resource: (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
+                        self.VMs2address = self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]
+                        for i in range(self.VMs2address):
+                            for res in self.evaluateCurrentResource:
+                                if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])):
+                                    self.VMs2address = self.VMs2address - 1
                                     # print("if b res[rCore]", res[rCore])
-                                    res[rCore] = res[rCore] - (evaluateScaleability[head][execs][head+1][VMcore])
+                                    res[self.rCore] = res[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
                                     # print("if a res[rCore]", res[rCore])
-                                    reserved = pools[res[id]]
-                                    reserved.append(
-                                        [evaluateScaleability[head][execs][head+1][VMcore], evaluateScaleability[head][execs][head+1][runtime], evaluateScaleability[head][bid],
-                                         evaluateScaleability[head][id]])
+                                    self.reserved = self.pools[res[self.id]]
+                                    self.reserved.append(
+                                        [self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore], self.evaluateScaleability[self.head][self.execs][self.head+1][self.runtime], self.evaluateScaleability[self.head][self.bid],
+                                         self.evaluateScaleability[self.head][self.id]])
                                     # print("res[id], reserved",res[id],res,reserved)
-                                    pools[res[id]] = reserved
+                                    self.pools[res[self.id]] = self.reserved
                                     break
-                            evaluateCurrentResource.sort(key=(
-                            lambda resource: (resource[rCore] - (evaluateScaleability[head][execs][head+1][VMcore]))))  # , reverse=True)
-                        jobsScaled.append(evaluateScaleability[head])
-                        Set.resources = copy.deepcopy(evaluateCurrentResource)
-                        print("         Scalability reduced resources: ", Set.resources)
-                        evaluateScaleability[head][execs].remove(evaluateScaleability[head][execs][head])
+                            self.evaluateCurrentResource.sort(key=(
+                            lambda resource: (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
+                        self.jobsScaled.append(self.evaluateScaleability[self.head])
+                        Set.resources = copy.deepcopy(self.evaluateCurrentResource)
+                        if Set.debug:
+                            print("         Scalability reduced resources: ", Set.resources)
+                        self.evaluateScaleability[self.head][self.execs].remove(self.evaluateScaleability[self.head][self.execs][self.head])
                     else:
-                        evaluateScaleability[head][execs].remove(evaluateScaleability[head][execs][head+1])
+                        self.evaluateScaleability[self.head][self.execs].remove(self.evaluateScaleability[self.head][self.execs][self.head+1])
                         ### >>> end of apply
 
 
-                    notScaleable = []  # first remove jobs with one execution option
-                    for job in evaluateScaleability:
-                        execsList = job[execs]
-                        if len(execsList) == 1:
-                            notScaleable.append(job)
-                    for job in notScaleable:
-                        evaluateScaleability.remove(job)
+                    self.notScaleable = []  # first remove jobs with one execution option
+                    for job in self.evaluateScaleability:
+                        self.execsList = job[self.execs]
+                        if len(self.execsList) == 1:
+                            self.notScaleable.append(job)
+                    for job in self.notScaleable:
+                        self.evaluateScaleability.remove(job)
 
 
 
             #print(Set.jobList)
-            timeStamp=timeStamp+1
+            self.timeStamp=self.timeStamp+1
             time.sleep(Set.sleepTime)
 
         # loss =(sum(x[bid]) for x in jobsFailed)
         print("\n")
-        loss=0
-        for x in jobsFailed:
-            loss=loss+x[bid]
+        self.loss=0
+        for x in self.jobsFailed:
+            self.loss=self.loss+x[self.bid]
 
-        scaled = 0
-        for x in jobsScaled:
-            scaled = scaled + 1
+        self.scaled = 0
+        for x in self.jobsScaled:
+            self.scaled = self.scaled + 1
 
-        print("jobs Addressed: ", len(jobsAddressed))
-        print("jobs Failed: " ,len(jobsFailed))
-        print("number time Scaled: ",scaled)
-        print("collected bid: ", collectedBid)
-        print("lost bid: ", loss)
+        if Set.MEO:
+            print(">>>MEO Results")
+        else:
+            print(">>>First Options Results")
+        print("jobs Addressed: ", len(self.jobsAddressed))
+        print("jobs Failed: " ,len(self.jobsFailed))
+        print("number time Scaled: ",self.scaled)
+        print("collected bid: ", self.collectedBid)
+        print("lost bid: ", self.loss)
         #print("number of times we scaled:")  #!!! fill
 
         return ()
