@@ -21,7 +21,8 @@ class ClassJobCreator:
                 cap = float(Set.loadMin) * float(Set.capacity)
             else:
                 cap=cap = float(Set.loadMax) * float(Set.capacity)
-            print("interval", i, " cap:", cap)
+            if Set.debugTimer:
+                print("interval", i, " cap:", cap)
             time.sleep(Set.sleepTime)
 
             #print("timeinterval: ", i," cap: ",cap," load: ",Set.load," coreCount: ",Set.capacity)
@@ -45,7 +46,7 @@ class ClassJobCreator:
                 #if cap<=0:
                  #   print("timeinterval: ", i," Cap Passed:",cap)
                   #  pass
-                runTime = random.randint(1,Set.maxRunTime*Set.timeInterval)         # run time 1 to 1.5*10 [max*each]
+                runTime = random.randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
                 bid=core*runTime                                                    # bid is base core*runtime
                 deadLine= random.uniform(Set.deadLineMin,Set.deadLineMin+1)*runTime # deadline 2-3 times of runtime
                 maxOptions=int(Set.maxVMoptions)
@@ -70,7 +71,7 @@ class ClassJobCreator:
                     runTime=runTime/scaleFactor
                     maxScale=scaleFactor
 
-                joblist.append([i*Set.timeInterval,options,deadLine,bid,id])
+                joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
 
                 core = random.choice(Set.vmCores)
                 vmConut = Set.switchCaseDic[core]  # base VM core

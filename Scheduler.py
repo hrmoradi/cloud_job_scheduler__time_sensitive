@@ -46,7 +46,8 @@ class ClassSchduler:
         """
 
         for du in range(Set.duration):                    # for specified time
-            print("Current timeStamp: ",self.timeStamp)#," duration:",du)
+            if Set.debugTimer:
+                print("Current timeStamp: ",self.timeStamp)#," duration:",du)
             if Set.debug:
                 print(" resources: ", Set.resources)
 
@@ -100,14 +101,17 @@ class ClassSchduler:
                     if ( (self.timeStamp+execution[self.runtime]-job[self.arrival]) > job[self.deadline]):
                         if Set.debug:
                             print("     Execution will be Removed for job ID: ", job[self.id],"     ", (self.timeStamp+execution[self.runtime]) ,">", job[self.deadline],"     ",job)
-                        self.exec2remove.append(execution)
+
                         if Set.firstOptionOnly:
-                            self.jobsFailed.append(job)
-                            self.shouldBeRemoved.append(job)
+                            #self.jobsFailed.append(job)
+                            #self.shouldBeRemoved.append(job)
+                            job[self.execs]=[]
                             if Set.debug:
                                 print("           First Option only mode: JOB will be Removed with ID: ", job[self.id], "     ", job)
+                        else:
+                            self.exec2remove.append(execution)
                 for exe in self.exec2remove:
-                    job[self.execs].remove(execution)
+                    job[self.execs].remove(exe)
 
                 if (len(job[self.execs])==0):
                     self.jobsFailed.append(job)
@@ -115,7 +119,8 @@ class ClassSchduler:
                         print("           no Exec left: JOB will be Removed with ID: ", job[self.id],"     ",job)
                     self.shouldBeRemoved.append(job)
             for job in self.shouldBeRemoved:                     # may have problem with jobs with single option and First option exec !!!
-                self.arrivalQueue.remove(job)
+                if self.shouldBeRemoved.count(job)>=1:
+                    self.arrivalQueue.remove(job) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
