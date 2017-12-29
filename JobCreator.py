@@ -31,7 +31,7 @@ class ClassJobCreator:
             vmConut = Set.switchCaseDic[core]  # base VM core
             cap = cap - core * vmConut
             #print("     core: ",core," vmCount: ",vmConut," cap: ",cap)
-            while(cap>=0):  # Creating Each Time interval # for 80% how do you know which one ended ???
+            while(cap>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
                 id=id+1
                 if Set.debug:
                     print("     id",id)#," cap: ",cap)

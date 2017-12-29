@@ -7,13 +7,13 @@ class ClassSchduler:
 
     def MainScheduler(self,jobList ):
         self.jobList=jobList
-        print("MainScheduler")
+        print("\nMainScheduler")
         #print(len(Set.jobList))
 
         """
         defining required constants and variables
         """
-
+        self.unUsedArea=0
         self.arrivalQueue = []
         self.jobsFailed=[]
         self.jobsAddressed=[]
@@ -59,10 +59,11 @@ class ClassSchduler:
                 self.shouldBeRemoved = []                 # creating array of jobs which should be removed for each pool (each resource)
                 for job in self.thisPool:
                     #reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
-                    #print("b processtime",job)
+                    if Set.debugDetail:
+                        print("b processtime",job)
                     job[1]=job[1]-1                  # reducing processing time
                     #print("a processtime",job)
-                    if job[1]==0:                    # if job finished
+                    if job[1]<=0:                    # if job finished
                         if Set.debug:
                             print("                         a VM will be removed from pool",key," job done with ID", job[3])
                         for res in Set.resources:    # returning used resource to pool
@@ -309,6 +310,8 @@ class ClassSchduler:
                                          self.evaluateScaleability[self.head][self.id]])
                                     # print("res[id], reserved",res[id],res,reserved)
                                     self.pools[res[self.id]] = self.reserved
+                                    if Set.debug:
+                                        print("***after Scale putting in pools: " ,self.pools[res[self.id]])
                                     break
                             self.evaluateCurrentResource.sort(key=(
                             lambda resource: (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
@@ -334,10 +337,17 @@ class ClassSchduler:
 
             #print(Set.jobList)
             self.timeStamp=self.timeStamp+1
+            for res in Set.resources:
+                self.unUsedArea=self.unUsedArea+res[self.rCore]
             time.sleep(Set.sleepTime)
 
         # loss =(sum(x[bid]) for x in jobsFailed)
         print("\n")
+        self.totalArea=0
+        for res in Set.resources:
+            self.totalArea = self.totalArea + res[self.rCore]
+        self.totalArea= self.totalArea * self.timeStamp
+
         self.loss=0
         for x in self.jobsFailed:
             self.loss=self.loss+x[self.bid]
@@ -350,11 +360,18 @@ class ClassSchduler:
             print(">>>MEO Results")
         else:
             print(">>>First Options Results")
-        print("jobs Addressed: ", len(self.jobsAddressed))
-        print("jobs Failed: " ,len(self.jobsFailed))
-        print("number time Scaled: ",self.scaled)
-        print("collected bid: ", self.collectedBid)
-        print("lost bid: ", self.loss)
-        #print("number of times we scaled:")  #!!! fill
+        if Set.debug:
+            print("jobs Addressed: ", len(self.jobsAddressed))
+            print("jobs Failed: " ,len(self.jobsFailed))
+            print("number time Scaled: ",self.scaled)
+            print("collected bid: ", self.collectedBid)
+            print("lost bid: ", self.loss)
+            print("unused area: ",self.unUsedArea)
+            print("total area: ", self.totalArea)
+            #print("number of times we scaled:")  #!!! fill
+        print("% Job Failed: ",int((len(self.jobsFailed)/float(len(self.jobsFailed)+len(self.jobsAddressed)))*100))
+        print("% Job Scaled: ", int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100))
+        print("% unused area: ", int((self.unUsedArea / float(self.totalArea))*100))
+        print("% lost bid: ",int((self.loss/float(self.loss+self.collectedBid))*100))
 
         return ()

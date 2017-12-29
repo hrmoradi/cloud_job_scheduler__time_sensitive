@@ -1,31 +1,34 @@
 import random
 
 debug=False
+debugDetail=False
 debugTimer=False
+sleepTime =0
 
 """jobCreator Constants"""
-capacity = 20
-loadMin = 0.80
+#capacity = 20 ########################################################
+capacity = 64 #16*2+8*4
+loadMin = 0.8
 loadMax= 1.4
-NumberOfTimeInterval=10
-eachTimeInterval=10
-maxRunTime=1.5 #
+NumberOfTimeInterval=100000 ############################################## 10
+eachTimeInterval=10 #####
+maxRunTime=3 ######################################################### 2
 vmCores = [2,4,8,16]
 deadLineMin =2 # to 2+1
 maxVMsize =16
 maxVMoptions=3
 minScaleFactor=1.4
-maxScaleFactor=2
+maxScaleFactor=1.9
 switchCaseDic={ 2: random.randint(1,2), 4: random.randint(1,2), 8: 1, 16: 1, }
 
 
 """Scheduler Constants"""
 #resources = "~input/resources.txt"
-resources = [[4,8,0,0,1],[16,64,0,0,2]] #core,mem,0,0,id
-duration=100+30 # duration of running the app
+#resources = [[4,8,0,0,1],[16,64,0,0,2]] #core,mem,0,0,id ##################################
+resources = [[16,64,0,0,1],[16,64,0,0,2],[8,16,0,0,3],[8,16,0,0,4],[8,16,0,0,5],[8,16,0,0,6]]
+duration=1000000+30 # duration of running the app #############################################
 firstOptionOnly=False
 MEO=True
-sleepTime =0
 bidDegree=10000
 
 
