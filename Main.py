@@ -7,10 +7,8 @@ from SchedulerEmulator.Scheduler import ClassSchduler as CS
 JobCreator= CJ()
 jobList=JobCreator.MainJobCreator()
 
-print("\n\nJob Writer or Reader")
-###################################################
-
 #print("\n\n***Main:Emulate TSRA-MEO")
+Set.resources=copy.deepcopy(Set.resourcesMain)
 EmulateMEO =CS()
 copyJoblist=copy.deepcopy(jobList)
 EmulateMEO.MainScheduler(copyJoblist)
@@ -18,7 +16,16 @@ EmulateMEO.MainScheduler(copyJoblist)
 #print("\n\n***Main:Emulate TSRA-First")
 Set.firstOptionOnly=True
 Set.MEO=False
+Set.resources=copy.deepcopy(Set.resourcesMain)
 EmulateFirst=CS()
 copyJoblist=copy.deepcopy(jobList)
 EmulateFirst.MainScheduler(copyJoblist)
 
+#print("\n\n***Main:Emulate TSRA-last")
+Set.firstOptionOnly=False
+Set.MEO=False
+Set.lastOption=True
+Set.resources=copy.deepcopy(Set.resourcesMain)
+EmulateLast=CS()
+copyJoblist=copy.deepcopy(jobList)
+EmulateLast.MainScheduler(copyJoblist)

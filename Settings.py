@@ -1,35 +1,45 @@
 import random
 
-debug=False
+xxx=False
+debugLevel1=xxx
+debugLevel2=False
+debug=xxx
 debugDetail=False
-debugTimer=False
-sleepTime =0
+debugTimer=xxx
+sleepTime =0.0
 
 """jobCreator Constants"""
 #capacity = 20 ########################################################
-capacity = 64 #16*2+8*4
-loadMin = 0.8
-loadMax= 1.4
-NumberOfTimeInterval=100000 ############################################## 10
+capacity = 80 #12
+loadMin = 0.4
+loadMax= 0#=======================================================0.8+0.6=1.4
+CosFluctuate= 0.22 #0.27->1.35
+avgSysLoad=1.1# +|- 30
+NumberOfTimeInterval=1000 ############################################## 10
 eachTimeInterval=10 #####
 maxRunTime=3 ######################################################### 2
-vmCores = [2,4,8,16]
-deadLineMin =2 # to 2+1
+vmCores = [2,4,8]#,16]
+deadLineMin =2 # to 2+2
+deadLineMax=4
 maxVMsize =16
-maxVMoptions=3
+maxVMoptions=4
 minScaleFactor=1.4
-maxScaleFactor=1.9
+maxScaleFactor=2
 switchCaseDic={ 2: random.randint(1,2), 4: random.randint(1,2), 8: 1, 16: 1, }
 
 
 """Scheduler Constants"""
+resources=[]
 #resources = "~input/resources.txt"
-#resources = [[4,8,0,0,1],[16,64,0,0,2]] #core,mem,0,0,id ##################################
-resources = [[16,64,0,0,1],[16,64,0,0,2],[8,16,0,0,3],[8,16,0,0,4],[8,16,0,0,5],[8,16,0,0,6]]
-duration=1000000+30 # duration of running the app #############################################
+#resources = [[4,8,0,0,1],[4,8,0,0,2],[2,4,0,0,3],[2,4,0,0,4]]
+#resources = [[8,32,0,0,1],[8,32,0,0,2],[4,8,0,0,3],[4,8,0,0,4],[2,4,0,0,5],[2,4,0,0,6],[2,4,0,0,7],[2,4,0,0,8]]
+resourcesMain = [[16,64,0,0,1],[16,64,0,0,2],[8,32,0,0,3],[8,32,0,0,4],[4,8,0,0,5],[4,8,0,0,6],[4,8,0,0,7],[4,8,0,0,8],[2,4,0,0,9],[2,4,0,0,10],[2,4,0,0,11],[2,4,0,0,12],[2,4,0,0,13],[2,4,0,0,14],[2,4,0,0,15],[2,4,0,0,16]] #
+#resources2 = [[16,64,0,0,1],[16,64,0,0,2],[8,32,0,0,3],[8,32,0,0,4],[4,8,0,0,5],[4,8,0,0,6],[4,8,0,0,7],[4,8,0,0,8],[2,4,0,0,9],[2,4,0,0,10],[2,4,0,0,11],[2,4,0,0,12],[2,4,0,0,13],[2,4,0,0,14],[2,4,0,0,15],[2,4,0,0,16]] #
+duration=10000 # duration of running the app #############################################
 firstOptionOnly=False
 MEO=True
-bidDegree=10000
+lastOption=False
+bidDegree=10
 
 
 

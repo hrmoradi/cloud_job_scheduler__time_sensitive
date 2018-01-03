@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from pylab import *
 import matplotlib as mpl
 import numpy as np
@@ -75,7 +75,6 @@ plt.grid(b=True, which='major', color='k', linestyle=':', alpha=0.5)
 plt.xticks(range(14))
 plt.yticks(range(25))
 
-=======
 from pylab import *
 import matplotlib as mpl
 import numpy as np
@@ -151,6 +150,5 @@ plt.grid(b=True, which='major', color='k', linestyle=':', alpha=0.5)
 
 plt.xticks(range(14))
 plt.yticks(range(25))
-
->>>>>>> df458eb21de756892d8c38a27bc0727e0fd0e233
 #show()
+
