@@ -8,74 +8,132 @@ import numpy as np
 class ClassJobCreator:
 
     def MainJobCreator(self):
+        if Set.randJob:
+            print("MainJobCreator -Random Job")
+        if Set.tableJob:
+            print("MainJobCreator -Table Job")
 
-        print("MainJobCreator")
         time.sleep(Set.sleepTime)
         #sampleJob # [s,[[e1],[e2],[e3]],d,b,id],
 
         joblist=[]
         id=0
+        capSum=0
+        head=0
+        numVM=0
+        numCore=1
+        execTime=2
+        mem=3
         for i in range(Set.NumberOfTimeInterval): # Creating Time intervals
 
-            if (i%2==0):# or i%10==7  ): # ====================================================================
-                cap = float(Set.loadMin) * float(Set.capacity)
-            elif (i%2==1 ):
-                cap= float(Set.loadMax) * float(Set.capacity)
-            elif True:
-                cap=0
-            """
-            cap = Set.avgSysLoad* float(Set.capacity)*(Set.loadMin) + int(math.floor(math.cos(i*90) *(Set.loadMax)* float(Set.capacity))) #Rihanna
-            """
+            cap = random.uniform(Set.avgSysLoad-Set.fluctuation,Set.avgSysLoad+Set.fluctuation)*Set.eachTimeInterval*Set.capacity
+            capSum= capSum+cap
+
 
 
             if Set.debugTimer:
                 print("interval", i, " cap:", cap)
                 # print("timeinterval: ", i," cap: ",cap," load: ",Set.load," coreCount: ",Set.capacity)
             time.sleep(Set.sleepTime)
-
-            core = random.choice(Set.vmCores) #=====================================================
-            vmConut = Set.switchCaseDic[core]  # base VM core
-            cap = cap - core * vmConut
-            #print("     core: ",core," vmCount: ",vmConut," cap: ",cap)
-            while(cap>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
-                id=id+1
-                if Set.debugLevel2:
-                    print("     id",id)#," cap: ",cap)
-                if Set.debugLevel2:
-                    print("     core: ", core, " vmCount: ", vmConut, " cap: ", cap)
-                time.sleep(Set.sleepTime)
-
-                runTime = ClassJobCreator.realRuntime(core,vmConut)#=================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
-                bid=ClassJobCreator.realBid(core,vmConut)*(runTime)*vmConut#=====================# bid is base core*runtime
-                deadLine= random.uniform(Set.deadLineMin,Set.deadLineMax)*runTime # deadline 2-4 times of runtime
-                maxOptions=int(Set.maxVMoptions)
-                #print(maxOptions)
+            if Set.tableJob:
                 options=[]
-                minScale=Set.minScaleFactor
-                maxScale=Set.maxScaleFactor
-                option=1
-                while(maxOptions>0):
+                app = random.choice(["bt","cg","ep","is","lu","mg","sp","ua"])
+                if app != "is":
+                    generateExec = ClassJobCreator.table1(app) #1
+                    options.append(generateExec)
+                generateExec = ClassJobCreator.table2(app) #2
+                options.append(generateExec)
+                generateExec = ClassJobCreator.table3(app) #3
+                options.append(generateExec)
+                generateExec = ClassJobCreator.table3(app) #4
+                options.append(generateExec)
+                options.sort(key=lambda x: x[2],reverse=True)
+                if Set.debugLevel2:
+                    print("options",options)
 
-                    options.append([vmConut,core,runTime]) # core but what to do with VM*Core ???
-                    if Set.debugDetail:
-                        print("          option num",option)
-                    option=option+1
+                core = options[head][numCore]
+                vmConut= options[head][numVM]
+                runTime=options[head][execTime]
+                cap = cap - (core * vmConut * runTime)
+                while (cap >= 0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
+                    id = id + 1
+                    if Set.debugLevel2:
+                        print("     id", id)  # ," cap: ",cap)
+                    if Set.debugLevel2:
+                        print("     core: ", core, " vmCount: ", vmConut, " cap: ", cap)
                     time.sleep(Set.sleepTime)
-                    if vmConut==1:
-                        vmConut=2
-                    else:
-                        vmConut=(vmConut+2)
-                    maxOptions=maxOptions-1
 
-                    scaleFactor =random.uniform(minScale,maxScale)
-                    runTime=runTime/scaleFactor
-                    maxScale=scaleFactor
+                    bid = ClassJobCreator.realBid(core, vmConut) * (runTime) * vmConut  # =====================# bid is base core*runtime
+                    deadLine = random.uniform(Set.deadLineMin,Set.deadLineMax) * runTime  # deadline 2-4 times of runtime
+                    joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
 
-                joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
+                    options = []
+                    app = random.choice(["bt", "cg", "ep", "is", "lu", "mg", "sp", "ua"])
+                    #print(app)
+                    if app != "is":
+                        generateExec = ClassJobCreator.table1(app)  # 1
+                        options.append(generateExec)
+                    generateExec = ClassJobCreator.table2(app)  # 2
+                    options.append(generateExec)
+                    generateExec = ClassJobCreator.table3(app)  # 3
+                    options.append(generateExec)
+                    generateExec = ClassJobCreator.table3(app)  # 4
+                    options.append(generateExec)
+                    options.sort(key=lambda x: x[2], reverse=True)
+                    #print("options", options)
 
-                core = random.choice(Set.vmCores)
+                    core = options[head][numCore]
+                    vmConut = options[head][numVM]
+                    runTime = options[head][execTime]
+                    cap = cap - (core * vmConut * runTime)
+
+
+            if Set.randJob:
+                core = random.choice(Set.vmCores) #=====================================================
                 vmConut = Set.switchCaseDic[core]  # base VM core
-                cap = cap - core * vmConut
+                runTime = ClassJobCreator.realRuntime(core, vmConut)
+                cap = cap - (core * vmConut*runTime)
+                #print("     core: ",core," vmCount: ",vmConut," cap: ",cap)
+                while(cap>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
+                    id=id+1
+                    if Set.debugLevel2:
+                        print("     id",id)#," cap: ",cap)
+                    if Set.debugLevel2:
+                        print("     core: ", core, " vmCount: ", vmConut, " cap: ", cap)
+                    time.sleep(Set.sleepTime)
+
+                    bid=ClassJobCreator.realBid(core,vmConut)*(runTime)*vmConut#=====================# bid is base core*runtime
+                    deadLine= random.uniform(Set.deadLineMin,Set.deadLineMax)*runTime # deadline 2-4 times of runtime
+                    maxOptions=int(Set.maxVMoptions)
+                    #print(maxOptions)
+                    options=[]
+                    minScale=Set.minScaleFactor
+                    option=1
+                    while(maxOptions>0):
+
+                        maxScale = 1/float(vmConut*core)
+                        options.append([vmConut,core,runTime]) # core but what to do with VM*Core ???
+                        if Set.debugDetail:
+                            print("          option num",option)
+                        option=option+1
+                        time.sleep(Set.sleepTime)
+                        if vmConut==1:
+                            vmConut=2
+                        else:
+                            vmConut=(vmConut*2)
+                        maxOptions=maxOptions-1
+
+                        maxScale = maxScale*(vmConut*core)
+                        scaleFactor =random.uniform(minScale,maxScale)
+                        runTime=runTime/scaleFactor
+
+
+                    joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
+
+                    core = random.choice(Set.vmCores)
+                    vmConut = Set.switchCaseDic[core]  # base VM core
+                    runTime = ClassJobCreator.realRuntime(core,vmConut)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
+                    cap = cap - (core * vmConut * runTime)
 
         for item in joblist:
             if Set.debug:
@@ -96,6 +154,14 @@ class ClassJobCreator:
             sumTime = sumTime + item[1][1][2]
         print("avg load 2nd execs: ",( sumLoad / float(Set.capacity * Set.duration)))
         print("avg Time 2nd exec: ",( sumTime / float(len(joblist))))
+        sumLoad = 0
+        sumTime = 0
+        for item in joblist:
+            sumLoad = sumLoad + (item[1][2][1] * item[1][2][0] * item[1][2][2])
+            sumTime = sumTime + item[1][2][2]
+        print("avg load 3rd execs: ", (sumLoad / float(Set.capacity * Set.duration)))
+        print("avg Time 3rd exec: ", (sumTime / float(len(joblist))))
+        print("avg Cap: ", capSum/Set.NumberOfTimeInterval)
 
         #print(np.average([48,21,87,83,43,60,30,89,106,56,60,30,85,102,51,61,85,96,51,85,29,8,47,75,79,27,45,66,29,69,25,44,56,82,34,50,67,98,15,88,111,67,97,58,15,98,99,78,15,73,29,49,63,57,34,44,51,74,28,43,60,75,33,53,65]))
 
@@ -103,23 +169,79 @@ class ClassJobCreator:
         return joblist
 
     def realRuntime(core,vmCount):
-        if core == 2:
-            return (random.choice([29,69,25,44,56,82,34,50,67,7,5,8,6]))#/vmCount)
-        if core ==  4:
-            return (random.choice([15,67,58,15,78,15,73,29,49,63,57,34,44,51,28,43,33,53,65,8,5,6,4,4,7,7,74,75,60,98,98,11,97]))#/vmCount)#xlarge
-        if core ==  8:
-            return (random.choice([60,30,89,56,60,30,85,51,61,96,51,29,8,47,75,79,27,45,66,8,8,8,5,6,6,7,5,102,106,96,85]))#/vmCount)#2xlarge
-        if core== 16:
-            return (random.choice([48,21,87,83,434,1,5]))#/vmCount) #4xlarge
+        if Set.randJob:
+            return random.randint (Set.minRuntime,Set.maxRunTime)
+        if Set.tableJob:
+            if core == 2:
+                return (random.choice([29,69,25,44,56,82,34,50,67,7,5,8,6]))#/vmCount)
+            if core ==  4:
+                return (random.choice([15,67,58,15,78,15,73,29,49,63,57,34,44,51,28,43,33,53,65,8,5,6,4,4,7,7,74,75,60,98,98,11,97]))#/vmCount)#xlarge
+            if core ==  8:
+                return (random.choice([60,30,89,56,60,30,85,51,61,96,51,29,8,47,75,79,27,45,66,8,8,8,5,6,6,7,5,102,106,96,85]))#/vmCount)#2xlarge
+            if core== 16:
+                return (random.choice([48,21,87,83,434,1,5]))#/vmCount) #4xlarge
         return()
 
     def realBid(core,vmCount):
-        if core == 2:
-            return 0.15
-        if core ==  4:
-            return (vmCount*random.choice([0.25,0.32,0.25]))
-        if core ==  8:
-            return (vmCount*random.choice([0.45,0.58,0.45]))
-        if core== 16:
-            return (vmCount*0.85)
+        if Set.randJob:
+            if core == 2:
+                return 0.15
+            if core ==  4:
+                return 0.25
+            if core ==  8:
+                return 0.45
+            if core== 16:
+                return 0.85
+        if Set.tableJob:
+            if core == 2:
+                return 0.15
+            if core == 4:
+                return (vmCount * random.choice([0.25, 0.32, 0.25]))
+            if core == 8:
+                return (vmCount * random.choice([0.45, 0.58, 0.45]))
+            if core == 16:
+                return (vmCount * 0.85)
         return()
+
+    """ tableJob """  # [#vm,#core,time,mem,!!!bid]
+    def table1(app):
+        table = {"bt": random.choice([[1, 4, 98.37, 16], [1, 4, 97.12, 30.5]]),
+                  "cg": random.choice([[1, 4, 58.01, 30.5]]),
+                  "ep": random.choice([[1, 4, 15.38, 16], [1, 4, 15.44, 30.5], [1, 4, 15.50, 7.5]]),
+                  "is": random.choice([[]]),  # is is not running on single 4 core
+                  "lu": random.choice([[1, 4, 88.79, 16], [1, 4, 98.65, 30.5]]),
+                  "mg": random.choice([[1, 4, 8.08, 30.5]]),
+                  "sp": random.choice([[1, 4, 111.37, 16], [1, 4, 99.34, 30.5]]),
+                  "ua": random.choice([[1, 4, 67.38, 16], [1, 4, 78.83, 30.5]])
+                  }
+        return (table[app])
+
+    def table2(app):
+        table = {"bt": random.choice([[1, 8, 60.5, 32], [1, 8, 60.55, 61]]),
+                  "cg": random.choice([[1, 8, 30.94, 32], [1, 8, 30.39, 61]]),
+                  "ep": random.choice([[1, 8, 8.31, 32], [1, 8, 8.27, 61], [1, 8, 8.28, 15]]),
+                  "is": random.choice([[1, 8, 1.35, 61]]),
+                  "lu": random.choice([[1, 8, 89.24, 32], [1, 8, 85.19, 61], [1, 8, 85.89, 15]]),
+                  "mg": random.choice([[1, 8, 6.54, 32], [1, 8, 6.12, 61]]),
+                  "sp": random.choice([[1, 8, 106.06, 32], [1, 8, 102.62, 61], [1, 8, 96.50, 15]]),
+                  "ua": random.choice([[1, 8, 56.79, 32], [1, 8, 51.43, 61], [1, 8, 51.37, 15]])
+                  }
+        return (table[app])
+
+    def table3(app):
+        table = {"bt": random.choice(
+            [[1, 16, 48.55, 64], [4, 4, 73.75, 16], [2, 8, 85.14, 61], [8, 2, 69.61, 3.75], [4, 4, 74.29, 7.5]]),
+                  "cg": random.choice(
+                      [[1, 16, 21.72, 64], [4, 4, 29.76, 16], [2, 8, 29.22, 61], [8, 2, 25.45, 3.75], [4, 4, 28.47, 7.5]]),
+                  "ep": random.choice(
+                      [[1, 16, 4.97, 64], [4, 4, 8.07, 16], [2, 8, 8.05, 61], [8, 2, 7.51, 3.75], [4, 4, 7.48, 7.5]]),
+                  "is": random.choice([[1, 16, 0.83, 64]]),
+                  "lu": random.choice(
+                      [[1, 16, 87.09, 64], [4, 4, 49.67, 16], [2, 8, 47.75, 61], [8, 2, 44.14, 3.75], [4, 4, 43.11, 7.5]]),
+                  "mg": random.choice(
+                      [[1, 16, 5.74, 64], [4, 4, 5.29, 16], [2, 8, 5.55, 61], [8, 2, 5.06, 3.75], [4, 4, 4.79, 7.5]]),
+                  "sp": random.choice(
+                      [[1, 16, 83.98, 64], [4, 4, 63.86, 16], [2, 8, 75.13, 61], [8, 2, 56.48, 3.75], [4, 4, 60.39, 7.5]]),
+                  "ua": random.choice([[1, 16, 43.32, 64]])
+                  }
+        return (table[app])

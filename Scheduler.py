@@ -259,9 +259,9 @@ class ClassSchduler:
                     while len(self.evaluateScaleability)!=0:
                         # evaluateScaleability.append([waiting]) # numVMs, numCores ?
 
-                        self.evaluateScaleability.sort(key=(#(lambda  x: x[self.execs][self.head])   ######################################====
-                        lambda x: ( float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
-                                    / float(x[self.execs][self.head+1][self.runtime]*x[self.execs][self.head+1][self.numVM]*x[self.execs][self.head+1][self.VMcore])))
+                        self.evaluateScaleability.sort(key=(#(lambda  x:x[self.execs][self.head])   ######################################====
+                        lambda x: (float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
+                                   / float(x[self.execs][self.head+1][self.runtime]*x[self.execs][self.head+1][self.numVM]*x[self.execs][self.head+1][self.VMcore])))
                         ,reverse=True)#x[self.execs][self.head][self.runtime]+
                         if Set.debugLevel2:
                             print("     id: ",self.evaluateScaleability[self.head][self.id]," Scalability Factor: ",(self.evaluateScaleability[self.head][self.execs][self.head][self.runtime]*self.evaluateScaleability[self.head][self.execs][self.head][self.numVM]*self.evaluateScaleability[self.head][self.execs][self.head][self.VMcore]) / float(self.evaluateScaleability[self.head][self.execs][self.head+1][self.runtime]*self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]*self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))
@@ -412,7 +412,7 @@ class ClassSchduler:
             print(">>>First Options Results")
         if Set.lastOption:
             print(">>>last Options Results")
-        if Set.debug:
+        if Set.debugLevel1:
             print("jobs Addressed: ", len(self.jobsAddressed))
             print("jobs Failed: " ,len(self.jobsFailed))
             print("number time Scaled: ",self.scaled)
@@ -423,9 +423,15 @@ class ClassSchduler:
             #print("number of times we scaled:")  #!!! fill
         self.resources.sort(key=lambda x: x[self.id])
         print(self.resources)
-        print("% Job Failed: ",int((len(self.jobsFailed)/float(len(self.jobsFailed)+len(self.jobsAddressed)))*100))
-        print("% Job Scaled: ", int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100))
-        print("% unused area: ", int((self.unUsedArea / float(self.totalArea))*100))
-        print("% gained bid: ",int((self.collectedBid/float(self.loss+self.collectedBid))*100))
 
-        return ()
+        failed=int((len(self.jobsFailed)/float(len(self.jobsFailed)+len(self.jobsAddressed)))*100)
+        scaled= int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100)
+        unused=int((self.unUsedArea / float(self.totalArea))*100)
+        gained=int((self.collectedBid/float(self.loss+self.collectedBid))*100)
+        if Set.debug:
+            print("% Job Failed:",failed )
+            print("% Job Scaled: ", scaled)
+            print("% unused area: ", unused)
+            print("% gained bid: ",gained)
+
+        return ([failed,scaled,unused,gained])
