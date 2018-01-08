@@ -18,7 +18,9 @@ class MainClass:
               "| number of time interval: ", Set.NumberOfTimeInterval,
               "| each interval: ",Set.eachTimeInterval,
               "| avg Load: ", Set.avgSysLoad,
-              "| random Job: ",Set.randJob)
+              "| random Job: ",Set.randJob,
+              "| capacity: ",Set.capacity,
+              "| mem: ", Set.capMem)
 
 
         """ Running Simulation iterations """
@@ -89,7 +91,8 @@ class MainClass:
               "| number of time interval: ", Set.NumberOfTimeInterval,
               "| each interval: ",Set.eachTimeInterval,
               "| avg Load: ", Set.avgSysLoad,
-              "| random Job: ",Set.randJob)
+              "| random Job: ",Set.randJob,
+              "| capacity: ",Set.capacity)
 
         return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained],
                 ["number of iteration: ",Set.numberOfIteration,
