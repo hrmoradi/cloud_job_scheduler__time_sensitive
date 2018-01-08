@@ -166,79 +166,179 @@ class ClassSchduler:
 
 
 
-            """evaluate and apply addressability of job and put in resource POOL """
+            """ Greedy algorithm""" # greedy
 
-            self.evaluateScaleability=[]
-            self.shadowQueue =copy.deepcopy(self.arrivalQueue)
-            for waiting in self.shadowQueue:
-                if Set.debug:
-                    print("\n     arrival queue head: ",waiting)
-                ### <<< evaluation
-                self.evaluateCurrentResource = copy.deepcopy(self.resources) # copy resources so changes do not apply for evaluation
-                self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                       (
-                                                       (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))**2 +
-                                                       (resource[self.rMem] - (waiting[self.execs][self.head][self.mem])) ** 2
-                                                       )**(1/2.0)
-                                                       ))#, reverse=True)
-                self.VMs2address = waiting[self.execs][self.head][self.numVM]
-                for i in range(self.VMs2address):
-                    #print("VMs2address: ",VMs2address)
-                    for res in self.evaluateCurrentResource:
-                        #print("res: ",res)
-                        if (res[self.rCore]>=(waiting[self.execs][self.head][self.VMcore])
-                            and
-                                    res[self.rMem]>=(waiting[self.execs][self.head][self.mem]) ):
-                            self.VMs2address = self.VMs2address-1
-                            #print("if b res[rCore]",res[rCore])
-                            res[self.rCore]= res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
-                            res[self.rMem] = res[self.rMem] - (waiting[self.execs][self.head][self.mem])
-                            #print("if a res[rCore]", res[rCore])
-                            break
-                    #print("for res end res[rCore]", res[rCore])
-                    self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                           (
-                                                               (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore])) ** 2 +
-                                                               (resource[self.rMem] - (waiting[self.execs][self.head][self.mem])) ** 2
-                                                           ) ** (1 / 2.0)
-                                                           ))  # , reverse=True)
-                ### <<< end of evaluation
-                if self.VMs2address ==0:                   # all requested VMs can be addressed
-                    if Set.debugDetail:
-                        print("     current resources: ",self.resources)
+            if Set.greedy is True:
+                self.evaluateScaleability = []
+                self.shadowQueue = copy.deepcopy(self.arrivalQueue)
+                for waiting in self.shadowQueue:
+                    self.addressed = False
+                    waiting[self.execs].sort(key=lambda x: x[2])  # not sorting for now
                     if Set.debugLevel2:
-                        print("     addressable job with ID: ", waiting[self.id]," numVMs requested: ",waiting[self.execs][self.head][self.numVM])
-                    # return(True)
-                    # this job is addressable so apply
-                    # repeat the process and put in pool
-                    # update the resources
-                    ### >>> apply
-                    self.evaluateCurrentResource = copy.deepcopy(self.resources)
-                    #print("evaluateCurrentResource Second:",evaluateCurrentResource)
+                       print(waiting[self.execs])
+
+                    for eachExec in waiting[self.execs]:
+                        if self.addressed is True:
+                            break
+                        if Set.debug:
+                            print("\n     arrival queue head: ", waiting)
+                        ### <<< evaluation
+                        self.evaluateCurrentResource = copy.deepcopy(
+                            self.resources)  # copy resources so changes do not apply for evaluation
+                        self.evaluateCurrentResource.sort(key=(lambda resource:
+                                                               (
+                                                                   (resource[self.rCore] - (
+                                                                   eachExec[self.VMcore])) ** 2 +
+                                                                   (resource[self.rMem] - (
+                                                                   eachExec[self.mem])) ** 2
+                                                               ) ** (1 / 2.0)
+                                                               ))  # , reverse=True)
+                        self.VMs2address = eachExec[self.numVM]
+                        for i in range(self.VMs2address):
+                            # print("VMs2address: ",VMs2address)
+                            for res in self.evaluateCurrentResource:
+                                # print("res: ",res)
+                                if (res[self.rCore] >= (eachExec[self.VMcore])
+                                    and
+                                            res[self.rMem] >= (eachExec[self.mem])):
+                                    self.VMs2address = self.VMs2address - 1
+                                    # print("if b res[rCore]",res[rCore])
+                                    res[self.rCore] = res[self.rCore] - (eachExec[self.VMcore])
+                                    res[self.rMem] = res[self.rMem] - (eachExec[self.mem])
+                                    # print("if a res[rCore]", res[rCore])
+                                    break
+                            # print("for res end res[rCore]", res[rCore])
+                            self.evaluateCurrentResource.sort(key=(lambda resource:
+                                                                   (
+                                                                       (resource[self.rCore] - (
+                                                                       eachExec[self.VMcore])) ** 2 +
+                                                                       (resource[self.rMem] - (
+                                                                       eachExec[self.mem])) ** 2
+                                                                   ) ** (1 / 2.0)
+                                                                   ))  # , reverse=True)
+                        ### <<< end of evaluation
+                        if self.VMs2address == 0:  # all requested VMs can be addressed
+                            if Set.debugDetail:
+                                print("     current resources: ", self.resources)
+                            if Set.debugLevel2:
+                                print("     addressable job with ID: ", waiting[self.id], " numVMs requested: ",
+                                      eachExec[self.numVM])
+                            # return(True)
+                            # this job is addressable so apply
+                            # repeat the process and put in pool
+                            # update the resources
+                            ### >>> apply
+                            self.evaluateCurrentResource = copy.deepcopy(self.resources)
+                            # print("evaluateCurrentResource Second:",evaluateCurrentResource)
+                            self.evaluateCurrentResource.sort(key=(lambda resource:
+                                                                   (
+                                                                       (resource[self.rCore] - (
+                                                                           eachExec[self.VMcore])) ** 2 +
+                                                                       (resource[self.rMem] - (
+                                                                           eachExec[self.mem])) ** 2
+                                                                   ) ** (1 / 2.0)
+                                                                   ))  # , reverse=True)
+                            self.VMs2address = eachExec[self.numVM]
+                            for i in range(self.VMs2address):
+                                for res in self.evaluateCurrentResource:
+                                    if (res[self.rCore] >= (eachExec[self.VMcore])
+                                        and
+                                                res[self.rMem] >= (eachExec[self.mem])):
+                                        self.VMs2address = self.VMs2address - 1
+                                        # print("if b res[rCore]", res[rCore])
+                                        res[self.rCore] = res[self.rCore] - (eachExec[self.VMcore])
+                                        res[self.rMem] = res[self.rMem] - (eachExec[self.mem])
+                                        # print("if a res[rCore]", res[rCore])
+                                        self.reserved = self.pools[res[self.id]]
+                                        self.reserved.append([eachExec[self.VMcore],
+                                                              eachExec[self.runtime], waiting[self.bid],
+                                                              waiting[self.id], eachExec[self.mem]])
+                                        # print("res[id], reserved",res[id],res,reserved)
+                                        self.pools[res[self.id]] = self.reserved
+                                        break
+                                self.evaluateCurrentResource.sort(key=(lambda resource:
+                                                                       (
+                                                                           (resource[self.rCore] - (
+                                                                               eachExec[
+                                                                                   self.VMcore])) ** 2 +
+                                                                           (resource[self.rMem] - (
+                                                                               eachExec[self.mem])) ** 2
+                                                                       ) ** (1 / 2.0)
+                                                                       ))  # , reverse=True)
+                            self.evaluateScaleability.append(
+                                waiting)  # this job is addressed and should be evaluated for Scalibility
+                            self.jobsAddressed.append(waiting)
+                            self.collectedBid = self.collectedBid + waiting[self.bid]
+                            # print("     collected bid ",collectedBid)
+                            # self.arrivalQueue.remove(waiting) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error not exist
+                            for item in self.arrivalQueue:
+                                if item[self.id]==waiting[self.id]:
+                                    self.arrivalQueue.remove(item)
+                            # print("     !2 check Scalability:",evaluateScaleability)
+                            self.resources = copy.deepcopy(self.evaluateCurrentResource)
+                            ### >>> end of apply
+                            if Set.debugDetail:
+                                print("     resources reduced: ", self.resources)
+                            self.addressed= True
+                            break
+                        else:
+                            if Set.debug:
+                                print("     Job not addressable with ID: ", waiting[self.id])
+                            if Set.debugDetail:
+                                print("     current resources: ", self.resources)
+
+
+
+            """evaluate and apply addressability of job and put in resource POOL """ # not Greedy
+
+            if Set.greedy is False:
+                self.evaluateScaleability=[]
+                self.shadowQueue =copy.deepcopy(self.arrivalQueue)
+                for waiting in self.shadowQueue:
+                    if Set.debug:
+                        print("\n     arrival queue head: ",waiting)
+                    ### <<< evaluation
+                    self.evaluateCurrentResource = copy.deepcopy(self.resources) # copy resources so changes do not apply for evaluation
                     self.evaluateCurrentResource.sort(key=(lambda resource:
                                                            (
-                                                               (resource[self.rCore] - (
-                                                               waiting[self.execs][self.head][self.VMcore])) ** 2 +
-                                                               (resource[self.rMem] - (
-                                                               waiting[self.execs][self.head][self.mem])) ** 2
-                                                           ) ** (1 / 2.0)
-                                                           ))  # , reverse=True)
+                                                           (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))**2 +
+                                                           (resource[self.rMem] - (waiting[self.execs][self.head][self.mem])) ** 2
+                                                           )**(1/2.0)
+                                                           ))#, reverse=True)
                     self.VMs2address = waiting[self.execs][self.head][self.numVM]
                     for i in range(self.VMs2address):
+                        #print("VMs2address: ",VMs2address)
                         for res in self.evaluateCurrentResource:
-                            if (res[self.rCore] >= (waiting[self.execs][self.head][self.VMcore])
+                            #print("res: ",res)
+                            if (res[self.rCore]>=(waiting[self.execs][self.head][self.VMcore])
                                 and
-                                        res[self.rMem] >= (waiting[self.execs][self.head][self.mem])):
-                                self.VMs2address = self.VMs2address - 1
-                                #print("if b res[rCore]", res[rCore])
-                                res[self.rCore] = res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
+                                        res[self.rMem]>=(waiting[self.execs][self.head][self.mem]) ):
+                                self.VMs2address = self.VMs2address-1
+                                #print("if b res[rCore]",res[rCore])
+                                res[self.rCore]= res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
                                 res[self.rMem] = res[self.rMem] - (waiting[self.execs][self.head][self.mem])
                                 #print("if a res[rCore]", res[rCore])
-                                self.reserved = self.pools[res[self.id]]
-                                self.reserved.append([waiting[self.execs][self.head][self.VMcore],waiting[self.execs][self.head][self.runtime],waiting[self.bid],waiting[self.id],waiting[self.execs][self.head][self.mem]])
-                                #print("res[id], reserved",res[id],res,reserved)
-                                self.pools[res[self.id]]=self.reserved
                                 break
+                        #print("for res end res[rCore]", res[rCore])
+                        self.evaluateCurrentResource.sort(key=(lambda resource:
+                                                               (
+                                                                   (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore])) ** 2 +
+                                                                   (resource[self.rMem] - (waiting[self.execs][self.head][self.mem])) ** 2
+                                                               ) ** (1 / 2.0)
+                                                               ))  # , reverse=True)
+                    ### <<< end of evaluation
+                    if self.VMs2address ==0:                   # all requested VMs can be addressed
+                        if Set.debugDetail:
+                            print("     current resources: ",self.resources)
+                        if Set.debugLevel2:
+                            print("     addressable job with ID: ", waiting[self.id]," numVMs requested: ",waiting[self.execs][self.head][self.numVM])
+                        # return(True)
+                        # this job is addressable so apply
+                        # repeat the process and put in pool
+                        # update the resources
+                        ### >>> apply
+                        self.evaluateCurrentResource = copy.deepcopy(self.resources)
+                        #print("evaluateCurrentResource Second:",evaluateCurrentResource)
                         self.evaluateCurrentResource.sort(key=(lambda resource:
                                                                (
                                                                    (resource[self.rCore] - (
@@ -247,21 +347,45 @@ class ClassSchduler:
                                                                    waiting[self.execs][self.head][self.mem])) ** 2
                                                                ) ** (1 / 2.0)
                                                                ))  # , reverse=True)
-                    self.evaluateScaleability.append(waiting) # this job is addressed and should be evaluated for Scalibility
-                    self.jobsAddressed.append(waiting)
-                    self.collectedBid=self.collectedBid+waiting[self.bid]
-                    #print("     collected bid ",collectedBid)
-                    self.arrivalQueue.remove(waiting)
-                    #print("     !2 check Scalability:",evaluateScaleability)
-                    self.resources = copy.deepcopy(self.evaluateCurrentResource)
-                    ### >>> end of apply
-                    if Set.debugDetail:
-                        print("     resources reduced: ", self.resources)
-                else:
-                    if Set.debug:
-                        print("     Job not addressable with ID: ", waiting[self.id])
-                    if Set.debugDetail:
-                        print("     current resources: ", self.resources)
+                        self.VMs2address = waiting[self.execs][self.head][self.numVM]
+                        for i in range(self.VMs2address):
+                            for res in self.evaluateCurrentResource:
+                                if (res[self.rCore] >= (waiting[self.execs][self.head][self.VMcore])
+                                    and
+                                            res[self.rMem] >= (waiting[self.execs][self.head][self.mem])):
+                                    self.VMs2address = self.VMs2address - 1
+                                    #print("if b res[rCore]", res[rCore])
+                                    res[self.rCore] = res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
+                                    res[self.rMem] = res[self.rMem] - (waiting[self.execs][self.head][self.mem])
+                                    #print("if a res[rCore]", res[rCore])
+                                    self.reserved = self.pools[res[self.id]]
+                                    self.reserved.append([waiting[self.execs][self.head][self.VMcore],waiting[self.execs][self.head][self.runtime],waiting[self.bid],waiting[self.id],waiting[self.execs][self.head][self.mem]])
+                                    #print("res[id], reserved",res[id],res,reserved)
+                                    self.pools[res[self.id]]=self.reserved
+                                    break
+                            self.evaluateCurrentResource.sort(key=(lambda resource:
+                                                                   (
+                                                                       (resource[self.rCore] - (
+                                                                       waiting[self.execs][self.head][self.VMcore])) ** 2 +
+                                                                       (resource[self.rMem] - (
+                                                                       waiting[self.execs][self.head][self.mem])) ** 2
+                                                                   ) ** (1 / 2.0)
+                                                                   ))  # , reverse=True)
+                        self.evaluateScaleability.append(waiting) # this job is addressed and should be evaluated for Scalibility
+                        self.jobsAddressed.append(waiting)
+                        self.collectedBid=self.collectedBid+waiting[self.bid]
+                        #print("     collected bid ",collectedBid)
+                        self.arrivalQueue.remove(waiting)
+                        #print("     !2 check Scalability:",evaluateScaleability)
+                        self.resources = copy.deepcopy(self.evaluateCurrentResource)
+                        ### >>> end of apply
+                        if Set.debugDetail:
+                            print("     resources reduced: ", self.resources)
+                    else:
+                        if Set.debug:
+                            print("     Job not addressable with ID: ", waiting[self.id])
+                        if Set.debugDetail:
+                            print("     current resources: ", self.resources)
 
 
 
@@ -451,6 +575,8 @@ class ClassSchduler:
             print(">>>First Options Results")
         if Set.lastOption:
             print(">>>last Options Results")
+        if Set.greedy:
+            print(">>>greedy Results")
         if Set.debugLevel1:
             print("jobs Addressed: ", len(self.jobsAddressed))
             print("jobs Failed: " ,len(self.jobsFailed))

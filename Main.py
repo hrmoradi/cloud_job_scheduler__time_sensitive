@@ -8,6 +8,7 @@ class MainClass:
         meo=[]
         first=[]
         last=[]
+        greedyFirst=[]
 
         failed=0
         scaled=1
@@ -36,6 +37,7 @@ class MainClass:
             Set.firstOptionOnly = False
             Set.MEO = True
             Set.lastOption = False
+            Set.greedy=False
             EmulateMEO =CS()
             results=EmulateMEO.MainScheduler(jobList,Set.resources)
             meo.append(results)
@@ -44,6 +46,7 @@ class MainClass:
             Set.firstOptionOnly=True
             Set.MEO=False
             Set.lastOption=False
+            Set.greedy=False
             EmulateFirst=CS()
             results =EmulateFirst.MainScheduler(jobList,Set.resources)
             first.append(results)
@@ -52,9 +55,19 @@ class MainClass:
             Set.firstOptionOnly=False
             Set.MEO=False
             Set.lastOption=True
+            Set.greedy=False
             EmulateLast=CS()
             results =EmulateLast.MainScheduler(jobList,Set.resources)
             last.append(results)
+
+            # print("\n\n***Main:Emulate Greedy")
+            Set.firstOptionOnly = False
+            Set.MEO = False
+            Set.lastOption = False
+            Set.greedy = True
+            EmulateLast = CS()
+            results = EmulateLast.MainScheduler(jobList, Set.resources)
+            greedyFirst.append(results)
 
 
 
@@ -87,6 +100,15 @@ class MainClass:
         avgLastGained = sum(int(g) for f,s,u,g in last)/float(Set.numberOfIteration)
         print("avg Last Gained Bid: %",avgLastGained)
 
+        avggreedyFirstFailed = sum(int(f) for f, s, u, g in greedyFirst) / float(Set.numberOfIteration)
+        print("\navg greedyFirst Failed: %", avggreedyFirstFailed)
+        avggreedyFirstScaled = sum(int(s) for f, s, u, g in greedyFirst) / float(Set.numberOfIteration)
+        print("avg greedyFirst Scaled: %", avggreedyFirstScaled)
+        avggreedyFirstUnused = sum(int(u) for f, s, u, g in greedyFirst) / float(Set.numberOfIteration)
+        print("avg greedyFirst Unused: %", avggreedyFirstUnused)
+        avggreedyFirstGained = sum(int(g) for f, s, u, g in greedyFirst) / float(Set.numberOfIteration)
+        print("avg greedyFirst Gained Bid: %", avggreedyFirstGained)
+
         print("\nnumber of iteration: ",Set.numberOfIteration,
               "| number of time interval: ", Set.NumberOfTimeInterval,
               "| each interval: ",Set.eachTimeInterval,
@@ -94,7 +116,7 @@ class MainClass:
               "| random Job: ",Set.randJob,
               "| capacity: ",Set.capacity)
 
-        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained],
+        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained,avggreedyFirstFailed,avggreedyFirstGained],
                 ["number of iteration: ",Set.numberOfIteration,
               "| number of time interval: ", Set.NumberOfTimeInterval,
               "| each interval: ",Set.eachTimeInterval,

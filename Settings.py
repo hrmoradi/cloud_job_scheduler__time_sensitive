@@ -14,7 +14,7 @@ sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 1
+numberOfIteration = 10
 
 
 
@@ -28,7 +28,7 @@ fluctuation= 0.40 ####################################################
 avgSysLoad= 0.8
 loadInc=10
 
-NumberOfTimeInterval=500 ##############################################
+NumberOfTimeInterval=10000 ##############################################
 eachTimeInterval=10
 maxRunTime=100 ###########################################################
 minRuntime=1
@@ -54,6 +54,7 @@ duration=NumberOfTimeInterval*eachTimeInterval+(deadLineMax*maxRunTime)+eachTime
 MEO=True
 firstOptionOnly=False
 lastOption=False
+greedy=False
 
 
 
