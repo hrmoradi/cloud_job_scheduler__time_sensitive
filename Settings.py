@@ -14,13 +14,13 @@ sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 1
+numberOfIteration = 2
 
 
 
 """jobCreator Constants"""
-randJob=True
-tableJob= False
+randJob=False
+tableJob= True
 
 capacity = 80 ########################################################
 capMem= 256
@@ -28,7 +28,7 @@ fluctuation= 0.40 ####################################################
 avgSysLoad= 0.8
 loadInc=10
 
-NumberOfTimeInterval=500 ##############################################
+NumberOfTimeInterval=1000 ##############################################
 eachTimeInterval=10
 maxRunTime=100 ###########################################################
 minRuntime=1

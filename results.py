@@ -37,13 +37,24 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     unusedLast=[]
     unusedgreedyFirst=[]
 
+    mfcpArray=[]
+    ffcpArray=[]
+    lfcpArray=[]
+    gfcpArray=[]
+
+    mfmpArray=[]
+    ffmpArray=[]
+    lfmpArray=[]
+    gfmpArray=[]
+
+
     for loadRatio in range(80,140+Set.loadInc,Set.loadInc): ############################################################# load
         Set.avgSysLoad=loadRatio/100.0
         #print("Set.avgSysLoad",Set.avgSysLoad)
 
         results= Mainfile.MainClass.mainMethod() ####################################################### running simulation
         [graph, title]=results
-        [avgMeoFailed, avgMeoGained, avgFirstFailed, avgFirstGained, avgLastFailed, avgLastGained, avggreedyFirstFailed,avggreedyFirstGained,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused]=graph
+        [avgMeoFailed, avgMeoGained, avgFirstFailed, avgFirstGained, avgLastFailed, avgLastGained, avggreedyFirstFailed,avggreedyFirstGained,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused,mfcp,mfmp,ffcp,ffmp,lfcp,lfmp,gfcp,gfmp]=graph
         print("results returned from main: mf mg f l: ",results)
         discardedMEO.append(avgMeoFailed)
         bidMEO.append(avgMeoGained)
@@ -61,6 +72,50 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         bidgreedyFirst.append(avggreedyFirstGained)
         unusedgreedyFirst.append(avggreedyFirstUnused)
 
+        mfcpArray.append(mfcp)
+        ffcpArray.append(ffcp)
+        lfcpArray.append(lfcp)
+        gfcpArray.append(gfcp)
+
+        mfmpArray.append(mfmp)
+        ffmpArray.append(ffmp)
+        lfmpArray.append(lfmp)
+        gfmpArray.append(gfmp)
+
+    """ cp: core area percentage """
+    plt.bar(location - 0.2, lfcpArray, align="center", width=0.1, color="lightcoral")
+    plt.bar(location - 0.1, ffcpArray, align="center", width=0.1, color="k")
+    plt.bar(location, mfcpArray, align="center", width=0.1, color="springgreen")
+    plt.bar(location + 0.1, gfcpArray, align="center", width=0.1, color="g")
+    plt.xticks(location, load)
+    plt.yticks(np.arange(0, 50, 5))
+    plt.ylabel("% Discarded Core*time Area")
+    plt.xlabel("Load")
+    plt.legend(["Thickest Option", "First Option", "Resource Scale Up (RSU)", "TSRA-Greedy"])
+    title4Plot = 'Discarded Core*time'  # +title
+    plt.title(title4Plot)
+    # plt.show()
+    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[
+        pointer] + "-discardedCoreTimePercentage.eps")
+    plt.clf()
+
+    """ mp: memory area percentage """
+    plt.bar(location - 0.2, lfmpArray, align="center", width=0.1, color="lightcoral")
+    plt.bar(location - 0.1, ffmpArray, align="center", width=0.1, color="k")
+    plt.bar(location, mfmpArray, align="center", width=0.1, color="springgreen")
+    plt.bar(location + 0.1, gfmpArray, align="center", width=0.1, color="g")
+    plt.xticks(location, load)
+    plt.yticks(np.arange(0, 50, 5))
+    plt.ylabel("% Discarded Mem*time Area")
+    plt.xlabel("Load")
+    plt.legend(["Thickest Option", "First Option", "Resource Scale Up (RSU)", "TSRA-Greedy"])
+    title4Plot = 'Discarded Mem*time'  # +title
+    plt.title(title4Plot)
+    # plt.show()
+    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[
+        pointer] + "-discardedMemTimePercentage.eps")
+    plt.clf()
+
     """ Discarded barchart """
     plt.bar(location - 0.2, discardedLast, align="center", width=0.1, color="lightcoral")
     plt.bar(location - 0.1, discardedFirst, align="center", width=0.1, color="k")
@@ -68,13 +123,13 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     plt.bar(location +0.1, discardedgreedyFirst, align="center", width=0.1, color="g")
     plt.xticks(location, load)
     plt.yticks(np.arange(0, 50, 5))
-    plt.ylabel("Discarded Jobs")
+    plt.ylabel("% Discarded Jobs")
     plt.xlabel("Load")
     plt.legend(["Thickest Option", "First Option", "Resource Scale Up (RSU)", "TSRA-Greedy"])
     title4Plot= 'Discarded JOBS'#+title
     plt.title(title4Plot)
     #plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-discardedJobPercentage.png")
+    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-discardedJobPercentage.eps")
     plt.clf()
 
     """ Gained benefit line"""
@@ -84,13 +139,13 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     plt.plot(location , bidgreedyFirst,'-', color="green", linewidth=0.4)
     plt.xticks(location, load)
     plt.yticks(np.arange(0, 110, 10))
-    plt.ylabel("Achived Benefit")
+    plt.ylabel("% Achived Benefit")
     plt.xlabel("Load")
     plt.legend(["Thickest Option", "First Option", "Resource Scale Up (RSU)", "TSRA-Greedy"])
     title4Plot = 'Gained Benefit'# + title
     plt.title(title4Plot)
     #plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/"+clusterString[pointer] +"-gainedBidPercentage.png")
+    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/"+clusterString[pointer] +"-gainedBidPercentage.eps")
     plt.clf()
 
     """ Unused Barchart """
@@ -100,15 +155,20 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     plt.bar(location +0.1, unusedgreedyFirst, align="center", width=0.1, color="g")
     plt.xticks(location, load)
     plt.yticks(np.arange(0, 50, 5))
-    plt.ylabel("Unused Area")
+    plt.ylabel("% Unused Area")
     plt.xlabel("Load")
     plt.legend(["Thickest Option", "First Option", "Resource Scale Up (RSU)", "TSRA-Greedy"])
     title4Plot = 'Unused Area'# + title
     plt.title(title4Plot)
     #plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-unusedAreaPercentage.png")
+    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-unusedAreaPercentage.eps")
+    #plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-unusedAreaPercentage.png")
     plt.clf()
 
+
+    plt.title(title)
+    # plt.show()
+    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-detail.eps")
 
 """
 discardedMEO = [4,7,10.2,13.4,16.8,20.5,23.8]

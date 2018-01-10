@@ -569,6 +569,30 @@ class ClassSchduler:
         for x in self.jobsScaled:
             self.scaled = self.scaled + 1
 
+        failedCPUarea=0
+        failedMEMarea=0
+        gainedCPUarea=0
+        gainedMEMarea=0
+        totalCPU=0
+        totalMEM=0
+
+        for item in jobList:
+            for failedItem in self.jobsFailed:
+                if item[self.id] == failedItem[self.id]:
+                    failedCPUarea+=item[self.execs][self.head][self.numVM]*item[self.execs][self.head][self.VMcore]*item[self.execs][self.head][self.runtime]
+                    failedMEMarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
+                    break
+            for gainedItem in self.jobsAddressed:
+                if item[self.id]==gainedItem[self.id]:
+                    gainedCPUarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.VMcore] * item[self.execs][self.head][self.runtime]
+                    gainedMEMarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
+                    break
+            """ double check sum of the results calculation by total """
+            totalCPU+=item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.VMcore] * item[self.execs][self.head][self.runtime]
+            totalMEM+=item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
+        area=[failedCPUarea,failedMEMarea,gainedCPUarea,gainedMEMarea,totalCPU,totalMEM]
+
+
         if Set.MEO:
             print(">>>MEO Results")
         if Set.firstOptionOnly:
@@ -593,13 +617,15 @@ class ClassSchduler:
         scaled= int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100)
         unused=int((self.unUsedArea / float(self.totalArea))*100)
         gained=int((self.collectedBid/float(self.loss+self.collectedBid))*100)
+
         if Set.debug:
             print("% Job Failed:",failed )
             print("% Job Scaled: ", scaled)
             print("% unused area: ", unused)
             print("% gained bid: ",gained)
+        print("area:",area)
 
-        return ([failed,scaled,unused,gained])
+        return ([failed,scaled,unused,gained,area])
 
 
     def EDsortResources(resourceArray,waitingHead):
