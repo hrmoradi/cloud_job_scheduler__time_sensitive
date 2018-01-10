@@ -116,12 +116,11 @@ class MainClass:
               "| random Job: ",Set.randJob,
               "| capacity: ",Set.capacity)
 
-        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained,avggreedyFirstFailed,avggreedyFirstGained],
-                ["number of iteration: ",Set.numberOfIteration,
-              "| number of time interval: ", Set.NumberOfTimeInterval,
-              "| each interval: ",Set.eachTimeInterval,
-              "| avg Load: ", Set.avgSysLoad,
-              "| random Job: ",Set.randJob])
+        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained,avggreedyFirstFailed,avggreedyFirstGained,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused],
+                ["it:",Set.numberOfIteration,
+              "|interval:", Set.NumberOfTimeInterval,
+              "|of:",Set.eachTimeInterval,
+              "|rand:",Set.randJob])
 
 if __name__== '__main__':
     MainClass.mainMethod()

@@ -105,10 +105,13 @@ class ClassJobCreator:
             """ creating random job """
 
             if Set.randJob:
-                core = random.choice(Set.vmCores) #=====================================================
-                vmConut = Set.switchCaseDic[core]  # base VM core
-                runTime = ClassJobCreator.realRuntime(core, vmConut)
+                core = random.choice([2,4,8,16]) #=====================================================
+                vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
+                runTime = random.uniform(Set.minRuntime,Set.maxRunTime)
+                memRatio= random.choice([2,4])  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                vmMem= core*memRatio
                 cap = cap - (core * vmConut*runTime)
+                capMem = capMem - (vmMem * vmConut * runTime)
                 #print("     core: ",core," vmCount: ",vmConut," cap: ",cap)
                 while(cap>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
                     id=id+1
@@ -128,7 +131,7 @@ class ClassJobCreator:
                     while(maxOptions>0):
 
                         maxScale = 1/float(vmConut*core)
-                        options.append([vmConut,core,runTime]) # core but what to do with VM*Core ???
+                        options.append([vmConut,core,runTime,core*memRatio]) # core but what to do with VM*Core ???
                         if Set.debugDetail:
                             print("          option num",option)
                         option=option+1
@@ -146,10 +149,13 @@ class ClassJobCreator:
 
                     joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
 
-                    core = random.choice(Set.vmCores)
-                    vmConut = Set.switchCaseDic[core]  # base VM core
-                    runTime = ClassJobCreator.realRuntime(core,vmConut)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
+                    core = random.choice([2,4,8,16])
+                    vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
+                    runTime = random.uniform(Set.minRuntime, Set.maxRunTime)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
                     cap = cap - (core * vmConut * runTime)
+                    memRatio = random.choice([2, 4])  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    vmMem = core * memRatio
+                    capMem = capMem - (vmMem * vmConut * runTime)
 
         for item in joblist[0:4]:
             if Set.xx:
@@ -172,12 +178,12 @@ class ClassJobCreator:
         print("avg Time 2nd exec: ",( sumTime / float(len(joblist))))
         sumLoad = 0
         sumTime = 0
-        for item in joblist:
-            sumLoad = sumLoad + (item[1][2][1] * item[1][2][0] * item[1][2][2])
-            sumTime = sumTime + item[1][2][2]
-        print("avg load 3rd execs: ", (sumLoad / float(Set.capacity * Set.duration)))
-        print("avg Time 3rd exec: ", (sumTime / float(len(joblist))))
-        print("avg Cap: ", capSum/Set.NumberOfTimeInterval)
+        #for item in joblist:
+        #    sumLoad = sumLoad + (item[1][2][1] * item[1][2][0] * item[1][2][2])
+        #    sumTime = sumTime + item[1][2][2]
+        #print("avg load 3rd execs: ", (sumLoad / float(Set.capacity * Set.duration)))
+        #print("avg Time 3rd exec: ", (sumTime / float(len(joblist))))
+        #print("avg Cap: ", capSum/Set.NumberOfTimeInterval)
 
         #print(np.average([48,21,87,83,43,60,30,89,106,56,60,30,85,102,51,61,85,96,51,85,29,8,47,75,79,27,45,66,29,69,25,44,56,82,34,50,67,98,15,88,111,67,97,58,15,98,99,78,15,73,29,49,63,57,34,44,51,74,28,43,60,75,33,53,65]))
 
@@ -291,3 +297,7 @@ class ClassJobCreator:
                   "ua": random.choice([[1, 16, 43.32, 64]])
                   }
         return (table[app])
+
+    def vmCountDic(core):
+        switchCaseDic = {2: random.randint(1, 2), 4: random.randint(1, 2), 8: 1, 16: 1, }
+        return (switchCaseDic[core])
