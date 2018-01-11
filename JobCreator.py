@@ -5,6 +5,8 @@ import copy
 import math
 import numpy as np
 
+
+
 class ClassJobCreator:
 
     def MainJobCreator(self):
@@ -38,7 +40,7 @@ class ClassJobCreator:
             if Set.debugTimer:
                 print("interval", i, " cap:", cap)
                 # print("timeinterval: ", i," cap: ",cap," load: ",Set.load," coreCount: ",Set.capacity)
-            time.sleep(Set.sleepTime)
+                time.sleep(Set.sleepTime)
 
 
 
@@ -105,7 +107,7 @@ class ClassJobCreator:
             """ creating random job """
 
             if Set.randJob:
-                core = random.choice([2,4,8,16]) #=====================================================
+                core = random.choice([4,8,16]) #=====================================================
                 vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
                 runTime = random.uniform(Set.minRuntime,Set.maxRunTime)
                 memRatio= random.choice([2,4])  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -113,7 +115,7 @@ class ClassJobCreator:
                 cap = cap - (core * vmConut*runTime)
                 capMem = capMem - (vmMem * vmConut * runTime)
                 #print("     core: ",core," vmCount: ",vmConut," cap: ",cap)
-                while(cap>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
+                while(cap>=0 and capMem>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
                     id=id+1
                     if Set.debugLevel2:
                         print("     id",id)#," cap: ",cap)
@@ -139,7 +141,7 @@ class ClassJobCreator:
                         if vmConut==1:
                             vmConut=2
                         else:
-                            vmConut=(vmConut*2)
+                            vmConut=(vmConut+2)
                         maxOptions=maxOptions-1
 
                         maxScale = maxScale*(vmConut*core)
@@ -149,7 +151,7 @@ class ClassJobCreator:
 
                     joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
 
-                    core = random.choice([2,4,8,16])
+                    core = random.choice([4,8,16])
                     vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
                     runTime = random.uniform(Set.minRuntime, Set.maxRunTime)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
                     cap = cap - (core * vmConut * runTime)
@@ -194,7 +196,7 @@ class ClassJobCreator:
     """ bid function """#  TO DO : make it accurate by mem !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     def realBid(core,vmCount):
-        if Set.xx:
+        if Set.randJob:
             if core == 2:
                 return 0.15
             if core ==  4:

@@ -14,13 +14,13 @@ sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 2
+numberOfIteration = 3
 
 
 
 """jobCreator Constants"""
-randJob=False
-tableJob= True
+randJob=True
+tableJob= False
 
 capacity = 80 ########################################################
 capMem= 256
@@ -31,7 +31,7 @@ loadInc=10
 NumberOfTimeInterval=1000 ##############################################
 eachTimeInterval=10
 maxRunTime=100 ###########################################################
-minRuntime=1
+minRuntime=5
 #vmCores = [2,4,8,16] ###################################################
 deadLineMin =2 #########################################################
 deadLineMax=4 # was 6 for results of friday
