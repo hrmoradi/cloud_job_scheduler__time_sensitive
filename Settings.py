@@ -1,6 +1,8 @@
 import random
 
-
+winAdd="C:\\Users\\Admin\\PycharmProjects\\PythonProjects\\SchedulerEmulator\\output\\"
+linuxAdd="/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/"
+add=winAdd
 
 xx=True
 xxx=False
@@ -14,13 +16,13 @@ sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 3
+numberOfIteration = 1
 
 
 
 """jobCreator Constants"""
-randJob=True
-tableJob= False
+randJob=False
+tableJob= True
 
 capacity = 80 ########################################################
 capMem= 256

@@ -31,14 +31,14 @@ class ClassJobCreator:
         """ for each interval """
         for i in range(Set.NumberOfTimeInterval): # Creating Time intervals
             randomCapScale= random.uniform(Set.avgSysLoad-Set.fluctuation,Set.avgSysLoad+Set.fluctuation)
-            cap = randomCapScale*Set.eachTimeInterval*Set.capacity
-            capMem= randomCapScale*Set.eachTimeInterval*Set.capMem # testing setting cap for mem
+            cap = float(randomCapScale*Set.eachTimeInterval*Set.capacity)
+            capMem= float(randomCapScale*Set.eachTimeInterval*Set.capMem) # testing setting cap for mem)
             capSum= capSum+cap
 
 
 
-            if Set.debugTimer:
-                print("interval", i, " cap:", cap)
+            if Set.debug:
+                print("interval", i, " cap:", cap," capMEM:",capMem)
                 # print("timeinterval: ", i," cap: ",cap," load: ",Set.load," coreCount: ",Set.capacity)
                 time.sleep(Set.sleepTime)
 
@@ -66,9 +66,25 @@ class ClassJobCreator:
                 vmConut= options[head][numVM]
                 runTime=options[head][execTime]
                 vmMem=options[head][mem]
-                cap = cap - (core * vmConut * runTime)
-                capMem= capMem - (vmMem*vmConut*runTime) # testing mem cap
-                while (cap >= 0 and capMem >=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
+                if cap > 0 and capMem > 0:
+                    if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
+                        print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                        if ((core * vmConut * runTime) / cap > (vmMem * vmConut * runTime) / capMem):
+                            keepLoad = (cap / float(core * vmConut * runTime))
+                            runTime = runTime * keepLoad
+                            for item in options:
+                                options[head][execTime]=options[head][execTime]* keepLoad
+                            print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
+                        else:
+                            keepLoad = (capMem / float(vmMem * vmConut * runTime))
+                            runTime = runTime * keepLoad
+                            for item in options:
+                                options[head][execTime]=options[head][execTime]* keepLoad
+                            print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                cap = math.floor(cap - (core * vmConut * runTime))
+                capMem = math.floor(capMem - (vmMem * vmConut * runTime))
+                print("interval", i, " cap:", cap, " capMEM:", capMem)
+                while (cap >= -1 and capMem >=-1):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
                     id = id + 1
                     if Set.debugLevel2:
                         print("     id", id)  # ," cap: ",cap)
@@ -100,9 +116,24 @@ class ClassJobCreator:
                     vmConut = options[head][numVM]
                     runTime = options[head][execTime]
                     vmMem= options[head][mem]
-                    cap = cap - (core * vmConut * runTime)
-                    capMem = capMem - (vmMem * vmConut * runTime)  # testing mem cap
-
+                    if cap > 0 and capMem > 0:
+                        if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
+                            print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                            if ((core * vmConut * runTime) / cap > (vmMem * vmConut * runTime) / capMem):
+                                keepLoad = (cap / float(core * vmConut * runTime))
+                                runTime = runTime * keepLoad
+                                for item in options:
+                                    options[head][execTime] = options[head][execTime] * keepLoad
+                                print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
+                            else:
+                                keepLoad = (capMem / float(vmMem * vmConut * runTime))
+                                runTime = runTime * keepLoad
+                                for item in options:
+                                    options[head][execTime] = options[head][execTime] * keepLoad
+                                print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                    cap = math.floor(cap - (core * vmConut * runTime))
+                    capMem = math.floor(capMem - (vmMem * vmConut * runTime))
+                    print("interval", i, " cap:", cap, " capMEM:", capMem)
 
             """ creating random job """
 
@@ -112,11 +143,24 @@ class ClassJobCreator:
                 runTime = random.uniform(Set.minRuntime,Set.maxRunTime)
                 memRatio= random.choice([2,4])  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 vmMem= core*memRatio
-                cap = cap - (core * vmConut*runTime)
-                capMem = capMem - (vmMem * vmConut * runTime)
-                #print("     core: ",core," vmCount: ",vmConut," cap: ",cap)
-                while(cap>=0 and capMem>=0):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
+                if cap > 0 and capMem>0:
+                    if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
+                        #print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                        if ((core * vmConut * runTime) / cap > (vmMem * vmConut * runTime) / capMem):
+                            keepLoad = (cap / float(core * vmConut * runTime))
+                            runTime = runTime * keepLoad
+                            #print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
+                        else:
+                            keepLoad = (capMem / float(vmMem * vmConut * runTime))
+                            runTime = runTime * keepLoad
+                            #print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                cap = math.floor(cap - (core * vmConut * runTime))
+                capMem = math.floor(capMem - (vmMem * vmConut * runTime))
+                #print("interval", i, " cap:", cap, " capMEM:", capMem)
+                #print("     core: ",core," vmCount: ",vmConut," mem:",vmMem," cap: ",cap)
+                while(cap>=-1 and capMem>=-1):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
                     id=id+1
+                    #print("     core: ", core, " vmCount: ", vmConut, " mem:", vmMem, " cap: ", cap," id:",id)
                     if Set.debugLevel2:
                         print("     id",id)#," cap: ",cap)
                     if Set.debugLevel2:
@@ -150,33 +194,52 @@ class ClassJobCreator:
 
 
                     joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
-
+                    #print(joblist[-1])
                     core = random.choice([4,8,16])
                     vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
                     runTime = random.uniform(Set.minRuntime, Set.maxRunTime)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
-                    cap = cap - (core * vmConut * runTime)
-                    memRatio = random.choice([2, 4])  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    memRatio = random.choice([2,4])  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     vmMem = core * memRatio
-                    capMem = capMem - (vmMem * vmConut * runTime)
+                    if cap > 0 and capMem > 0:
+                        if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
+                            #print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                            if ((core * vmConut * runTime) / cap > (vmMem * vmConut * runTime) / capMem):
+                                keepLoad = (cap / float(core * vmConut * runTime))
+                                runTime = runTime * keepLoad
+                                #print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
+                            else:
+                                keepLoad = (capMem / float(vmMem * vmConut * runTime))
+                                runTime = runTime * keepLoad
+                                #print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                    cap = math.floor(cap - (core * vmConut * runTime))
+                    capMem = math.floor(capMem - (vmMem * vmConut * runTime))
+                    #print("interval", i, " cap:", cap, " capMEM:", capMem)
 
         for item in joblist[0:4]:
             if Set.xx:
                 print(item[4]," :",item)
         print("number of jobs Created:",len(joblist))
 
+        print("random Cap avg: ", 100 * (capSum / float(Set.capMem * Set.duration)))
+
+        sumLoad = 0
+        for item in joblist:
+            sumLoad = sumLoad + (item[1][0][3] * item[1][0][0] * item[1][0][2])
+        print("avg load 1st execs area MEM: ", 100 * (sumLoad / float(Set.capMem  * Set.duration)))
+
         sumLoad = 0
         sumTime = 0
         for item in joblist:
             sumLoad = sumLoad + (item[1][0][1] * item[1][0][0] * item[1][0][2])
             sumTime = sumTime + item[1][0][2]
-        print("avg load 1st execs: ", (sumLoad / float(Set.capacity*Set.duration)))
+        print("avg load 1st execs area cPU: ", 100*(sumLoad / float(Set.capacity*Set.duration)))
         print("avg Time 1st exec: ",( sumTime / float(len(joblist))))
         sumLoad = 0
         sumTime = 0
         for item in joblist:
             sumLoad = sumLoad + (item[1][1][1] * item[1][1][0] * item[1][1][2])
             sumTime = sumTime + item[1][1][2]
-        print("avg load 2nd execs: ",( sumLoad / float(Set.capacity * Set.duration)))
+        print("avg load 2nd execs CPU: ",100*(sumLoad / float(Set.capacity*Set.duration)))
         print("avg Time 2nd exec: ",( sumTime / float(len(joblist))))
         sumLoad = 0
         sumTime = 0

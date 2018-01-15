@@ -95,7 +95,7 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     title4Plot = 'Discarded Core*time'  # +title
     plt.title(title4Plot)
     # plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[
+    plt.savefig(Set.add+ clusterString[
         pointer] + "-discardedCoreTimePercentage.eps")
     plt.clf()
 
@@ -112,7 +112,7 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     title4Plot = 'Discarded Mem*time'  # +title
     plt.title(title4Plot)
     # plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[
+    plt.savefig(Set.add+ clusterString[
         pointer] + "-discardedMemTimePercentage.eps")
     plt.clf()
 
@@ -129,7 +129,7 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     title4Plot= 'Discarded JOBS'#+title
     plt.title(title4Plot)
     #plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-discardedJobPercentage.eps")
+    plt.savefig(Set.add+ clusterString[pointer] + "-discardedJobPercentage.eps")
     plt.clf()
 
     """ Gained benefit line"""
@@ -145,7 +145,7 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     title4Plot = 'Gained Benefit'# + title
     plt.title(title4Plot)
     #plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/"+clusterString[pointer] +"-gainedBidPercentage.eps")
+    plt.savefig(Set.add+clusterString[pointer] +"-gainedBidPercentage.eps")
     plt.clf()
 
     """ Unused Barchart """
@@ -161,14 +161,14 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     title4Plot = 'Unused Area'# + title
     plt.title(title4Plot)
     #plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-unusedAreaPercentage.eps")
+    plt.savefig(Set.add+clusterString[pointer] + "-unusedAreaPercentage.eps")
     #plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-unusedAreaPercentage.png")
     plt.clf()
 
 
     plt.title(title)
     # plt.show()
-    plt.savefig("/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/" + clusterString[pointer] + "-detail.eps")
+    plt.savefig(Set.add+ clusterString[pointer] + "-detail.eps")
 
 """
 discardedMEO = [4,7,10.2,13.4,16.8,20.5,23.8]
