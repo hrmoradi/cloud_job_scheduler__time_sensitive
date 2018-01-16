@@ -67,23 +67,23 @@ class ClassJobCreator:
                 runTime=options[head][execTime]
                 vmMem=options[head][mem]
                 if cap > 0 and capMem > 0:
-                    if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
-                        print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                    if (cap < (core * vmConut * runTime)or capMem < (vmMem * vmConut * runTime)):
+                        #print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime) ###############
                         if ((core * vmConut * runTime) / cap > (vmMem * vmConut * runTime) / capMem):
                             keepLoad = (cap / float(core * vmConut * runTime))
                             runTime = runTime * keepLoad
                             for item in options:
-                                options[head][execTime]=options[head][execTime]* keepLoad
-                            print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
+                                item[execTime]=item[execTime]* keepLoad
+                            #print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime) #################
                         else:
                             keepLoad = (capMem / float(vmMem * vmConut * runTime))
                             runTime = runTime * keepLoad
                             for item in options:
                                 options[head][execTime]=options[head][execTime]* keepLoad
-                            print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                            #print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime) #######
                 cap = math.floor(cap - (core * vmConut * runTime))
                 capMem = math.floor(capMem - (vmMem * vmConut * runTime))
-                print("interval", i, " cap:", cap, " capMEM:", capMem)
+                #print("interval", i, " cap:", cap, " capMEM:", capMem)
                 while (cap >= -1 and capMem >=-1):  # Creating Each Time interval # for 80% how do you know which one ended ??? ###### tweek reduce load >=
                     id = id + 1
                     if Set.debugLevel2:
@@ -95,6 +95,8 @@ class ClassJobCreator:
                     bid = ClassJobCreator.realBid(core, vmConut) * (runTime) * vmConut  # =====================# bid is base core*runtime
                     deadLine = random.uniform(Set.deadLineMin,Set.deadLineMax) * runTime  # deadline 2-4 times of runtime
                     joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
+                    #print("interval", i, " cap:", cap, " capMEM:", capMem) ##########
+                    #print(joblist[-1]) ##########
 
                     """ next job gen """
                     options = []
@@ -118,22 +120,22 @@ class ClassJobCreator:
                     vmMem= options[head][mem]
                     if cap > 0 and capMem > 0:
                         if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
-                            print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                            #print("exceed", cap, " ", capMem, "area:", core * vmConut * runTime, "run", runTime)
                             if ((core * vmConut * runTime) / cap > (vmMem * vmConut * runTime) / capMem):
                                 keepLoad = (cap / float(core * vmConut * runTime))
                                 runTime = runTime * keepLoad
                                 for item in options:
-                                    options[head][execTime] = options[head][execTime] * keepLoad
-                                print("****cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
+                                    item[execTime] = item[execTime] * keepLoad
+                                #print("***i*cap exceed", cap, "area:", core * vmConut * runTime, "run", runTime)
                             else:
                                 keepLoad = (capMem / float(vmMem * vmConut * runTime))
                                 runTime = runTime * keepLoad
                                 for item in options:
                                     options[head][execTime] = options[head][execTime] * keepLoad
-                                print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
+                                #print("****mem exceed", capMem, "area:", core * vmConut * runTime, "run", runTime)
                     cap = math.floor(cap - (core * vmConut * runTime))
                     capMem = math.floor(capMem - (vmMem * vmConut * runTime))
-                    print("interval", i, " cap:", cap, " capMEM:", capMem)
+                    #print("interval", i, " cap:", cap, " capMEM:", capMem)
 
             """ creating random job """
 
@@ -216,7 +218,7 @@ class ClassJobCreator:
                     #print("interval", i, " cap:", cap, " capMEM:", capMem)
 
         for item in joblist[0:4]:
-            if Set.xx:
+            if Set.fx:
                 print(item[4]," :",item)
         print("number of jobs Created:",len(joblist))
 

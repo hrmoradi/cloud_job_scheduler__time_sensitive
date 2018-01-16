@@ -17,6 +17,7 @@ class ClassSchduler:
         defining required constants and variables
         """
         self.unUsedArea=0
+        self.unUsedMem=0
         self.arrivalQueue = []
         self.jobsFailed=[]
         self.jobsAddressed=[]
@@ -198,9 +199,7 @@ class ClassSchduler:
                             # print("VMs2address: ",VMs2address)
                             for res in self.evaluateCurrentResource:
                                 # print("res: ",res)
-                                if (res[self.rCore] >= (eachExec[self.VMcore])
-                                    and
-                                            res[self.rMem] >= (eachExec[self.mem])):
+                                if (res[self.rCore] >= (eachExec[self.VMcore]) and res[self.rMem] >= (eachExec[self.mem])): #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MEM!!!
                                     self.VMs2address = self.VMs2address - 1
                                     # print("if b res[rCore]",res[rCore])
                                     res[self.rCore] = res[self.rCore] - (eachExec[self.VMcore])
@@ -241,9 +240,7 @@ class ClassSchduler:
                             self.VMs2address = eachExec[self.numVM]
                             for i in range(self.VMs2address):
                                 for res in self.evaluateCurrentResource:
-                                    if (res[self.rCore] >= (eachExec[self.VMcore])
-                                        and
-                                                res[self.rMem] >= (eachExec[self.mem])):
+                                    if (res[self.rCore] >= (eachExec[self.VMcore]) and  res[self.rMem] >= (eachExec[self.mem])): # !!!!!!!!!!!!!!!!!!!!!!!!!MEM!!!
                                         self.VMs2address = self.VMs2address - 1
                                         # print("if b res[rCore]", res[rCore])
                                         res[self.rCore] = res[self.rCore] - (eachExec[self.VMcore])
@@ -310,9 +307,7 @@ class ClassSchduler:
                         #print("VMs2address: ",VMs2address)
                         for res in self.evaluateCurrentResource:
                             #print("res: ",res)
-                            if (res[self.rCore]>=(waiting[self.execs][self.head][self.VMcore])
-                                and
-                                        res[self.rMem]>=(waiting[self.execs][self.head][self.mem]) ):
+                            if (res[self.rCore]>=(waiting[self.execs][self.head][self.VMcore]) and res[self.rMem]>=(waiting[self.execs][self.head][self.mem]) ): #!!!!!!!!!!!!!!!! MEM!!!
                                 self.VMs2address = self.VMs2address-1
                                 #print("if b res[rCore]",res[rCore])
                                 res[self.rCore]= res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
@@ -350,9 +345,7 @@ class ClassSchduler:
                         self.VMs2address = waiting[self.execs][self.head][self.numVM]
                         for i in range(self.VMs2address):
                             for res in self.evaluateCurrentResource:
-                                if (res[self.rCore] >= (waiting[self.execs][self.head][self.VMcore])
-                                    and
-                                            res[self.rMem] >= (waiting[self.execs][self.head][self.mem])):
+                                if (res[self.rCore] >= (waiting[self.execs][self.head][self.VMcore]) and res[self.rMem] >= (waiting[self.execs][self.head][self.mem])):
                                     self.VMs2address = self.VMs2address - 1
                                     #print("if b res[rCore]", res[rCore])
                                     res[self.rCore] = res[self.rCore] - (waiting[self.execs][self.head][self.VMcore])
@@ -448,9 +441,7 @@ class ClassSchduler:
                             # print("VMs2address: ",VMs2address)
                             for res in self.shadowResources:
                                 # print("res: ",res)
-                                if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
-                                    and
-                                    res[self.rMem] >= (self.evaluateScaleability[self.head][self.execs][self.head + 1][self.mem])):
+                                if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]) and res[self.rMem] >= (self.evaluateScaleability[self.head][self.execs][self.head + 1][self.mem])): # !!!!!!!!!!!!!!! MEM!!!
                                     self.VMs2address = self.VMs2address - 1
                                     # print("if b res[rCore]",res[rCore])
                                     res[self.rCore] = res[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
@@ -502,7 +493,7 @@ class ClassSchduler:
                             self.VMs2address = self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]
                             for i in range(self.VMs2address):
                                 for res in self.evaluateCurrentResource:
-                                    if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
+                                    if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]) # !!!!!!!!!!!!!!!!!!11   MEM!!!
                                         and
                                                 res[self.rMem] >= (
                                             self.evaluateScaleability[self.head][self.execs][self.head + 1][
@@ -549,6 +540,8 @@ class ClassSchduler:
             self.timeStamp=self.timeStamp+1
             for res in self.resources:
                 self.unUsedArea=self.unUsedArea+res[self.rCore]
+            for res in self.resources:
+                self.unUsedMem=self.unUsedMem+res[self.rMem]
             time.sleep(Set.sleepTime)
 
 
@@ -560,6 +553,10 @@ class ClassSchduler:
         for res in Set.resources:
             self.totalArea = self.totalArea + res[self.rCore]
         self.totalArea= self.totalArea * self.timeStamp
+        self.totalMemArea = 0
+        for res in Set.resources:
+            self.totalMemArea = self.totalMemArea + res[self.rMem]
+        self.totalMemArea = self.totalMemArea * self.timeStamp
 
         self.loss=0
         for x in self.jobsFailed:
@@ -607,7 +604,8 @@ class ClassSchduler:
             print("number time Scaled: ",self.scaled)
             print("collected bid: ", self.collectedBid)
             print("lost bid: ", self.loss)
-            print("unused area: ",self.unUsedArea)
+            print("unused CpU area: ",self.unUsedArea)
+            print("unused Mem area: ", self.unUsedMem)
             print("total area: ", self.totalArea)
             #print("number of times we scaled:")  #!!! fill
         self.resources.sort(key=lambda x: x[self.id])
@@ -616,6 +614,7 @@ class ClassSchduler:
         failed=int((len(self.jobsFailed)/float(len(self.jobsFailed)+len(self.jobsAddressed)))*100)
         scaled= int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100)
         unused=int((self.unUsedArea / float(self.totalArea))*100)
+        unusedMem = int((self.unUsedMem / float(self.totalMemArea)) * 100)
         gained=int((self.collectedBid/float(self.loss+self.collectedBid))*100)
 
         if Set.debug:
@@ -625,7 +624,7 @@ class ClassSchduler:
             print("% gained bid: ",gained)
         print("area:",area)
 
-        return ([failed,scaled,unused,gained,area])
+        return ([failed,scaled,unused,gained,area,unusedMem])
 
 
     def EDsortResources(resourceArray,waitingHead):

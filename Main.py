@@ -75,103 +75,112 @@ class MainClass:
 
         """ Average of simulations """
 
-        avgMeoFailed = sum(int(f) for f,s,u,g,a in meo)/float(Set.numberOfIteration)
+        avgMeoFailed = sum(int(f) for f,s,u,g,a,uM in meo)/float(Set.numberOfIteration)
         print("\navg Meo Failed: %",avgMeoFailed)
-        avgMeoScaled = sum(int(s) for f,s,u,g,a in meo)/float(Set.numberOfIteration)
+        avgMeoScaled = sum(int(s) for f,s,u,g,a,uM in meo)/float(Set.numberOfIteration)
         print("avg Meo Scaled: %",avgMeoScaled)
-        avgMeoUnused = sum(int(u) for f,s,u,g,a in meo)/float(Set.numberOfIteration)
+        avgMeoUnused = sum(int(u) for f,s,u,g,a,uM in meo)/float(Set.numberOfIteration)
         print("avg Meo Unused: %",avgMeoUnused)
-        avgMeoGained = sum(int(g) for f,s,u,g,a in meo)/float(Set.numberOfIteration)
+        avgMeoUnusedMem = sum(int(uM) for f, s, u, g, a, uM in meo) / float(Set.numberOfIteration)
+        print("avg Meo Unused MEM: %", avgMeoUnusedMem)
+        avgMeoGained = sum(int(g) for f,s,u,g,a,uM in meo)/float(Set.numberOfIteration)
         print("avg Meo Gained Bid: %",avgMeoGained)
 
-        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo)   /float(Set.numberOfIteration))
+        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo)   /float(Set.numberOfIteration))
         print("fc: ", fc)
-        gc = (sum(int(gc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo)   /float(Set.numberOfIteration))
+        gc = (sum(int(gc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo)   /float(Set.numberOfIteration))
         print("gc: ", gc)
-        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo)   /float(Set.numberOfIteration))
+        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo)   /float(Set.numberOfIteration))
         print("fc: ", tc)
 
         print("fc: %", (fc/gc)*100)
         print("gc: %", (gc/tc)*100)
         print("tc: %", ((fc+gc)/tc)*100)
 
-        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo) /float(Set.numberOfIteration))
+        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo) /float(Set.numberOfIteration))
         #print("fm: ", fm)
-        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo)/float(Set.numberOfIteration))
+        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo)/float(Set.numberOfIteration))
         #print("tm: ", tm)
         mfmp=((fm) / tm) * 100
         print("mfmp: %", mfmp)
 
-        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo) / float(Set.numberOfIteration))
+        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo) / float(Set.numberOfIteration))
         #print("fc: ", fc)
-        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in meo) / float(Set.numberOfIteration))
+        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in meo) / float(Set.numberOfIteration))
         #print("tc: ", tc)
         mfcp = ((fc) / tc) * 100
         print("mfcp: %", mfcp)
 
-        avgFirstFailed = sum(int(f) for f,s,u,g,a in first)/float(Set.numberOfIteration)
+        avgFirstFailed = sum(int(f) for f,s,u,g,a,uM in first)/float(Set.numberOfIteration)
         print("\navg First Failed: %",avgFirstFailed)
-        avgFirstScaled = sum(int(s) for f,s,u,g,a in first)/float(Set.numberOfIteration)
+        avgFirstScaled = sum(int(s) for f,s,u,g,a,uM in first)/float(Set.numberOfIteration)
         print("avg First Scaled: %",avgFirstScaled)
-        avgFirstUnused = sum(int(u) for f,s,u,g,a in first)/float(Set.numberOfIteration)
+        avgFirstUnused = sum(int(u) for f,s,u,g,a,uM in first)/float(Set.numberOfIteration)
         print("avg First Unused: %",avgFirstUnused)
-        avgFirstGained = sum(int(g) for f,s,u,g,a in first)/float(Set.numberOfIteration)
+        avgFirstUnusedMem = sum(int(uM) for f, s, u, g, a, uM in first) / float(Set.numberOfIteration)
+        print("avg First Unused MEM: %", avgFirstUnusedMem)
+        avgFirstGained = sum(int(g) for f,s,u,g,a,uM in first)/float(Set.numberOfIteration)
+
         print("avg First Gained Bid: %",avgFirstGained)
 
-        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in first) / float(Set.numberOfIteration))
+        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in first) / float(Set.numberOfIteration))
         # print("fm: ", fm)
-        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in first) / float(Set.numberOfIteration))
+        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in first) / float(Set.numberOfIteration))
         # print("tm: ", tm)
         ffmp = ((fm) / tm) * 100
         print("ffmp: %", ffmp)
 
-        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in first) / float(Set.numberOfIteration))
+        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in first) / float(Set.numberOfIteration))
         # print("fc: ", fc)
-        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in first) / float(Set.numberOfIteration))
+        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in first) / float(Set.numberOfIteration))
         # print("tc: ", tc)
         ffcp = ((fc) / tc) * 100
         print("ffcp: %", ffcp)
 
-        avgLastFailed = sum(int(f) for f,s,u,g,a in last)/float(Set.numberOfIteration)
+        avgLastFailed = sum(int(f) for f,s,u,g,a,uM in last)/float(Set.numberOfIteration)
         print("\navg Last Failed: %",avgLastFailed)
-        avgLastScaled = sum(int(s) for f,s,u,g,a in last)/float(Set.numberOfIteration)
+        avgLastScaled = sum(int(s) for f,s,u,g,a,uM in last)/float(Set.numberOfIteration)
         print("avg Last Scaled: %",avgLastScaled)
-        avgLastUnused = sum(int(u) for f,s,u,g,a in last)/float(Set.numberOfIteration)
+        avgLastUnused = sum(int(u) for f,s,u,g,a,uM in last)/float(Set.numberOfIteration)
         print("avg Last Unused: %",avgLastUnused)
-        avgLastGained = sum(int(g) for f,s,u,g,a in last)/float(Set.numberOfIteration)
+        avgLastUnusedMem = sum(int(uM) for f, s, u, g, a, uM in last) / float(Set.numberOfIteration)
+        print("avg Last Unused MEM: %", avgLastUnusedMem)
+        avgLastGained = sum(int(g) for f,s,u,g,a,uM in last)/float(Set.numberOfIteration)
         print("avg Last Gained Bid: %",avgLastGained)
 
-        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in last) / float(Set.numberOfIteration))
+        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in last) / float(Set.numberOfIteration))
         # print("fm: ", fm)
-        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in last) / float(Set.numberOfIteration))
+        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in last) / float(Set.numberOfIteration))
         # print("tm: ", tm)
         lfmp = ((fm) / tm) * 100
         print("lfmp: %", lfmp)
 
-        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in last) / float(Set.numberOfIteration))
+        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in last) / float(Set.numberOfIteration))
         # print("fc: ", fc)
-        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in last) / float(Set.numberOfIteration))
+        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in last) / float(Set.numberOfIteration))
         # print("tc: ", tc)
         lfcp = ((fc) / tc) * 100
         print("lfcp: %", lfcp)
 
-        avggreedyFirstFailed = sum(int(f) for f, s, u, g,a in greedyFirst) / float(Set.numberOfIteration)
+        avggreedyFirstFailed = sum(int(f) for f, s, u, g,a,uM in greedyFirst) / float(Set.numberOfIteration)
         print("\navg greedyFirst Failed: %", avggreedyFirstFailed)
-        avggreedyFirstScaled = sum(int(s) for f, s, u, g,a in greedyFirst) / float(Set.numberOfIteration)
+        avggreedyFirstScaled = sum(int(s) for f, s, u, g,a,uM in greedyFirst) / float(Set.numberOfIteration)
         print("avg greedyFirst Scaled: %", avggreedyFirstScaled)
-        avggreedyFirstUnused = sum(int(u) for f, s, u, g,a in greedyFirst) / float(Set.numberOfIteration)
+        avggreedyFirstUnused = sum(int(u) for f, s, u, g,a,uM in greedyFirst) / float(Set.numberOfIteration)
         print("avg greedyFirst Unused: %", avggreedyFirstUnused)
-        avggreedyFirstGained = sum(int(g) for f, s, u, g,a in greedyFirst) / float(Set.numberOfIteration)
+        avggreedyFirstUnusedMem = sum(int(uM) for f, s, u, g, a, uM in greedyFirst) / float(Set.numberOfIteration)
+        print("avg greedyFirst Unused MEM: %", avggreedyFirstUnusedMem)
+        avggreedyFirstGained = sum(int(g) for f, s, u, g,a,uM in greedyFirst) / float(Set.numberOfIteration)
         print("avg greedyFirst Gained Bid: %", avggreedyFirstGained)
-        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in greedyFirst) / float(Set.numberOfIteration))
+        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in greedyFirst) / float(Set.numberOfIteration))
         # print("fc: ", fc)
-        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in greedyFirst) / float(Set.numberOfIteration))
+        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in greedyFirst) / float(Set.numberOfIteration))
         # print("tc: ", tc)
         gfcp = ((fc) / tc) * 100
         print("gfcp: %", gfcp)
-        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in greedyFirst) / float(Set.numberOfIteration))
+        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in greedyFirst) / float(Set.numberOfIteration))
         # print("fm: ", fm)
-        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm] in greedyFirst) / float(Set.numberOfIteration))
+        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm],uM in greedyFirst) / float(Set.numberOfIteration))
         # print("tm: ", tm)
         gfmp = ((fm) / tm) * 100
         print("gfmp: %", gfmp)
@@ -183,7 +192,7 @@ class MainClass:
               "| random Job: ",Set.randJob,
               "| capacity: ",Set.capacity)
 
-        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained,avggreedyFirstFailed,avggreedyFirstGained,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused,mfcp,mfmp,ffcp,ffmp,lfcp,lfmp,gfcp,gfmp],
+        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained,avggreedyFirstFailed,avggreedyFirstGained,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused,mfcp,mfmp,ffcp,ffmp,lfcp,lfmp,gfcp,gfmp,avgLastUnusedMem,avgFirstUnusedMem,avgMeoUnusedMem,avggreedyFirstUnusedMem],
                 ["it:",Set.numberOfIteration,
               "|interval:", Set.NumberOfTimeInterval,
               "|of:",Set.eachTimeInterval,

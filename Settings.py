@@ -4,25 +4,25 @@ winAdd="C:\\Users\\Admin\\PycharmProjects\\PythonProjects\\SchedulerEmulator\\ou
 linuxAdd="/home/hrmoradi/PycharmProjects/PythonProjects/SchedulerEmulator/output/"
 add=winAdd
 
-xx=True
-xxx=False
+tx=True
+fx=False
 
-debugLevel1=xxx
-debugLevel2=xxx
-debug=xxx
-debugDetail=xxx
-debugTimer=xxx
+debugLevel1=fx
+debugLevel2=fx
+debug=fx
+debugDetail=fx
+debugTimer=fx
 sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 1
+numberOfIteration = 2
 
 
 
 """jobCreator Constants"""
-randJob=False
-tableJob= True
+randJob=fx
+tableJob= tx
 
 capacity = 80 ########################################################
 capMem= 256
