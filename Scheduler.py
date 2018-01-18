@@ -405,7 +405,7 @@ class ClassSchduler:
                         # evaluateScaleability.append([waiting]) # numVMs, numCores ?
 
                         self.evaluateScaleability.sort(key=(#(lambda  x:x[self.execs][self.head])   ######################################====
-                        lambda x: (float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
+                        lambda x: (x[self.execs][self.head][self.runtime]+float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
                                    / float(x[self.execs][self.head+1][self.runtime]*x[self.execs][self.head+1][self.numVM]*x[self.execs][self.head+1][self.VMcore])))
                         ,reverse=True)#x[self.execs][self.head][self.runtime]+
                         if Set.debugLevel2:
