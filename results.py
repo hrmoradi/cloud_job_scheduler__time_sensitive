@@ -6,6 +6,7 @@ import SchedulerEmulator.Main as Mainfile
 
 
 location = np.arange(7)
+#load=["40-160","50-170","60-180","70-190","80-200","90-210","100-220 [3-1]"]
 load=["80","90","100","110","120","130","140"]
 
 

@@ -31,21 +31,13 @@ class ClassJobCreator:
         """ for each interval """
         for i in range(Set.NumberOfTimeInterval): # Creating Time intervals
             randomCapScale=0
-            if i%6==0:
-                randomCapScale= random.uniform(Set.avgSysLoad+(Set.fluctuation*0.75),Set.avgSysLoad+Set.fluctuation)
-            elif i%6==1:
-                randomCapScale = random.uniform(Set.avgSysLoad + (Set.fluctuation * 0.75),Set.avgSysLoad + Set.fluctuation)
-            elif i%6==2:
-                randomCapScale = random.uniform(Set.avgSysLoad + (Set.fluctuation * 0.75),Set.avgSysLoad + Set.fluctuation)
-            elif i%6==3:
-                randomCapScale = random.uniform(Set.avgSysLoad-Set.fluctuation,Set.avgSysLoad-(Set.fluctuation*0.75))
-            elif i%6==4:
-                randomCapScale = random.uniform(Set.avgSysLoad-Set.fluctuation,Set.avgSysLoad-(Set.fluctuation*0.75))
-            elif i%6==5:
-                randomCapScale = random.uniform(Set.avgSysLoad-Set.fluctuation,Set.avgSysLoad-(Set.fluctuation*0.75))
-            #elif i%3==2:
-            #    randomCapScale=random.uniform(
-            #randomCapScale = random.uniform(Set.avgSysLoad - Set.fluctuation, Set.avgSysLoad + Set.fluctuation)
+            """
+            if i%4==0:
+                randomCapScale= (Set.avgSysLoad+2*Set.fluctuation)#Set.avgSysLoad+(Set.fluctuation*0.75),
+            else:
+                randomCapScale = (Set.avgSysLoad-Set.fluctuation)
+            """
+            randomCapScale = random.uniform(Set.avgSysLoad - Set.fluctuation, Set.avgSysLoad + Set.fluctuation)
             cap = float(randomCapScale*Set.eachTimeInterval*Set.capacity)
             capMem= float(randomCapScale*Set.eachTimeInterval*Set.capMem) # testing setting cap for mem)
             capSum= capSum+cap
@@ -155,10 +147,10 @@ class ClassJobCreator:
             """ creating random job """
 
             if Set.randJob:
-                core = random.choice([4,8,16]) #=====================================================
+                core = random.choice([2,4,8]) #=====================================================
                 vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
-                runTime = random.uniform(Set.minRuntime,Set.maxRunTime)
-                memRatio= random.choice([2,4])  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                runTime = random.uniform(Set.minRuntime,Set.maxRunTime/2.0)
+                memRatio= random.choice([2])  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 vmMem= core*memRatio
                 if cap > 0 and capMem>0:
                     if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):
@@ -212,10 +204,10 @@ class ClassJobCreator:
 
                     joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
                     #print(joblist[-1])
-                    core = random.choice([4,8,16])
+                    core = random.choice([2,4,8])
                     vmConut = ClassJobCreator.vmCountDic(core)  # base VM core
-                    runTime = random.uniform(Set.minRuntime, Set.maxRunTime)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
-                    memRatio = random.choice([2,4])  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    runTime = random.uniform(Set.minRuntime, Set.maxRunTime/2.0)  # =================================#randint(1, Set.maxRunTime * Set.eachTimeInterval)         # run time 1 to 1.5*10 [max*each]
+                    memRatio = random.choice([2])  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     vmMem = core * memRatio
                     if cap > 0 and capMem > 0:
                         if (cap < (core * vmConut * runTime) or capMem < (vmMem * vmConut * runTime)):

@@ -21,8 +21,8 @@ numberOfIteration = 1
 
 
 """jobCreator Constants"""
-randJob=fx
-tableJob= tx
+randJob=tx
+tableJob= fx
 
 capacity = 80 ########################################################
 capMem= 256
