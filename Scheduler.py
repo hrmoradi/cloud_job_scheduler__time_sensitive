@@ -982,14 +982,15 @@ class ClassSchduler:
         id = 4
         #x[execs][0]
         max=0
+        #print("test",type(x[execs]),x[execs])
         for pointer in list(range(1,len(x[execs]),1)):
             #print(pointer)
-            temp=x[bid]/float(ClassSchduler.minSlope(x[execs],int(pointer))*(timeStamp+x[deadline]-x[arrival])*(x[execs][pointer][runtime])*ClassSchduler.minResourceUsageRation(x[execs],int(pointer)))
+            temp=x[bid]/float(ClassSchduler.minSlope(x[execs],int(pointer))*(timeStamp+x[deadline]-x[arrival])*(x[execs][pointer][runtime])*ClassSchduler.minResourceUsageRation(x[execs],int(pointer))+1)
             if temp>max:
                 max=temp
         return(max)
 
-    def minSlope(execs,pointer):
+    def minSlope(execsArray,pointer):
 
         head = 0
         arrival = 0
@@ -1004,11 +1005,11 @@ class ClassSchduler:
         mem=3
         cpuSlope=0
         memSlope=0
-        print(type(pointer),type(runtime),type(numVM),type(VMcore),print(execs),type(execs))
-        cpuSlope=(execs[pointer][runtime]-execs[pointer-1][runtime])/float(execs[pointer][numVM]*execs[pointer][VMcore]-execs[pointer-1][numVM]*execs[pointer-1][VMcore])
-        memSlope=(execs[pointer][runtime]-execs[pointer-1][runtime])/float(execs[pointer][numVM]*execs[pointer][mem]-execs[pointer-1][numVM]*execs[pointer-1][mem])
+        #print("test2",print(execs),type(execs))
+        cpuSlope=(execsArray[pointer][runtime]-execsArray[pointer-1][runtime])/(float(execsArray[pointer][numVM]*execsArray[pointer][VMcore]-execsArray[pointer-1][numVM]*execsArray[pointer-1][VMcore])+0.1)
+        memSlope=(execsArray[pointer][runtime]-execsArray[pointer-1][runtime])/(float(execsArray[pointer][numVM]*execsArray[pointer][mem]-execsArray[pointer-1][numVM]*execsArray[pointer-1][mem])+0.1)
         return (min([cpuSlope,memSlope]))
-    def minResourceUsageRation(execs,pointer):
+    def minResourceUsageRation(execsArray,pointer):
         numVM = 0
         VMcore = 1
         mem = 3
@@ -1016,7 +1017,7 @@ class ClassSchduler:
         rMem=1
         min=1000
         for resource in Set.resources:
-            temp=(execs[pointer][numVM]*execs[pointer][mem]/float(resource[rMem]))+ (execs[pointer][numVM] * execs[pointer][VMcore] / float(resource[rCore]))
+            temp=(execsArray[pointer][numVM]*execsArray[pointer][mem]/(float(resource[rMem])+1)+ (execsArray[pointer][numVM] * execsArray[pointer][VMcore] / (float(resource[rCore])+1)))
             if min> temp:
                 min=temp
         return(min)
