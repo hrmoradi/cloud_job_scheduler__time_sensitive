@@ -90,7 +90,7 @@ class ClassSchduler:
 
 
 
-            """adding "new jobs" to arrivalQueue based on arrival time stamp of jobs """
+            """adding "new jobs" to arrivalQueue based on arrival time stamp of jobs """ """ PLUS removing all but first or last !!! """
 
             while (self.nextJobArrival<=self.timeStamp and len(self.jobList)!=0):      # asses any job in list which received
                 if Set.debugLevel1:

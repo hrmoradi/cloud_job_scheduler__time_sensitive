@@ -65,7 +65,7 @@ class ClassJobCreator:
                 options.append(generateExec)
                 generateExec = ClassJobCreator.table4(app) #4
                 options.append(generateExec)
-                #options.sort(key=lambda x: x[2])#,reverse=True) # not sorting for now
+                options.sort(key=lambda x: x[2],reverse=True) # not sorting for now
                 if Set.debugLevel2:
                     print("options",options)
 
@@ -99,7 +99,7 @@ class ClassJobCreator:
                         print("     core: ", core, " vmCount: ", vmConut, " cap: ", cap)
                     time.sleep(Set.sleepTime)
 
-                    bid = ClassJobCreator.realBid(core, vmConut) * (runTime) * vmConut  # =====================# bid is base core*runtime
+                    bid = ClassJobCreator.realBid(core, vmConut,vmMem) * (runTime) * vmConut  # =====================# bid is base core*runtime
                     deadLine = random.uniform(Set.deadLineMin,Set.deadLineMax) * runTime  # deadline 2-4 times of runtime
                     joblist.append([i * Set.eachTimeInterval, options, deadLine, bid, id])
                     #print("interval", i, " cap:", cap, " capMEM:", capMem) ##########
@@ -118,7 +118,7 @@ class ClassJobCreator:
                     options.append(generateExec)
                     generateExec = ClassJobCreator.table4(app)  # 4
                     options.append(generateExec)
-                    #options.sort(key=lambda x: x[2], reverse=True) # no sorting for now
+                    options.sort(key=lambda x: x[2], reverse=True) # no sorting for now
                     #print("options", options)
 
                     core = options[head][numCore]
@@ -176,7 +176,7 @@ class ClassJobCreator:
                         print("     core: ", core, " vmCount: ", vmConut, " cap: ", cap)
                     time.sleep(Set.sleepTime)
 
-                    bid=ClassJobCreator.realBid(core,vmConut)*(runTime)*vmConut#=====================# bid is base core*runtime
+                    bid=ClassJobCreator.realBid(core,vmConut,vmMem)*(runTime)*vmConut#=====================# bid is base core*runtime
                     deadLine= random.uniform(Set.deadLineMin,Set.deadLineMax)*runTime # deadline 2-4 times of runtime
                     maxOptions=int(Set.maxVMoptions)
                     #print(maxOptions)
@@ -224,8 +224,10 @@ class ClassJobCreator:
                     capMem = math.floor(capMem - (vmMem * vmConut * runTime))
                     #print("interval", i, " cap:", cap, " capMEM:", capMem)
 
+        """ info on created jobs """
+
         for item in joblist[0:4]:
-            if Set.fx:
+            if Set.tx:
                 print(item[4]," :",item)
         print("number of jobs Created:",len(joblist))
 
@@ -267,25 +269,27 @@ class ClassJobCreator:
 
     """ bid function """#  TO DO : make it accurate by mem !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    def realBid(core,vmCount):
-        if Set.randJob:
-            if core == 2:
-                return 0.15
-            if core ==  4:
-                return 0.25
-            if core ==  8:
-                return 0.45
-            if core== 16:
-                return 0.85
-        if Set.tableJob:
-            if core == 2:
-                return 0.15
-            if core == 4:
-                return (vmCount * random.choice([0.25, 0.32, 0.25]))
-            if core == 8:
-                return (vmCount * random.choice([0.45, 0.58, 0.45]))
-            if core == 16:
-                return (vmCount * 0.85)
+    def realBid(core,vmCount,vmMem):
+        if core == 2 :
+            return random.uniform(0.05,0.15)
+        if core == 4 and vmMem==7.5:
+            return (random.uniform(0.15,0.25))
+        if core == 4 and vmMem==8:
+            return (random.uniform(0.15,0.25))
+        if core == 4 and vmMem==30.5:
+            return (random.uniform(0.22,0.32))
+        if core == 4 and vmMem==16:
+            return (random.uniform(0.15,0.25))
+        if core == 8 and vmMem==15:
+            return (random.uniform(0.35,0.45))
+        if core == 8 and vmMem==16:
+            return (random.uniform(0.35,0.45))
+        if core == 8 and vmMem==61:
+            return (random.uniform(0.48,0.58))
+        if core == 8 and vmMem==32:
+            return (random.uniform(0.35,0.45))
+        if core == 16:
+            return (random.uniform(0.75,0.85))
         return()
 
 
