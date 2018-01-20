@@ -5,6 +5,7 @@ import copy
 
 class ClassSchduler:
 
+
     def MainScheduler(self,jobList,resources ):
         self.jobList=copy.deepcopy(jobList)
         self.resources=copy.deepcopy(resources)
@@ -154,19 +155,33 @@ class ClassSchduler:
             """Sorting arrivalQueue """
 
             #Sorted Queue
-            self.maxBidInQueue=0
-            for item in self.arrivalQueue:
-                if item[self.bid]>self.maxBidInQueue:
-                    if Set.debugDetail:
-                        print("bid in q: ",item[self.bid])
-                    self.maxBidInQueue=item[self.bid]
-            if Set.debugDetail:
-                print("max bid in queue: ",self.maxBidInQueue)
-            self.arrivalQueue.sort(key=( lambda x:
-                                         (( float(self.timeStamp+x[self.execs][self.head][self.runtime])/float(x[self.deadline]+job[self.arrival]) )
-                                         +((x[self.bid]/float(self.maxBidInQueue))/float(Set.bidDegree)) ) )
-                                   ,reverse=True )
+            if Set.greedy is True:
+                self.maxBidInQueue=0
+                for item in self.arrivalQueue:
+                    if item[self.bid]>self.maxBidInQueue:
+                        if Set.debugDetail:
+                            print("bid in q: ",item[self.bid])
+                        self.maxBidInQueue=item[self.bid]
+                if Set.debugDetail:
+                    print("max bid in queue: ",self.maxBidInQueue)
+                self.arrivalQueue.sort(key=( lambda req:
+                                             ClassSchduler.Fi(req,self.timeStamp)
+                                             )
+                                       ,reverse=True )
             #print(arrivalQueue)
+            if Set.greedy is False:
+                self.maxBidInQueue=0
+                for item in self.arrivalQueue:
+                    if item[self.bid]>self.maxBidInQueue:
+                        if Set.debugDetail:
+                            print("bid in q: ",item[self.bid])
+                        self.maxBidInQueue=item[self.bid]
+                if Set.debugDetail:
+                    print("max bid in queue: ",self.maxBidInQueue)
+                self.arrivalQueue.sort(key=( lambda x:
+                                             (( float(self.timeStamp+x[self.execs][self.head][self.runtime])/float(x[self.deadline]+job[self.arrival]) )
+                                             +((x[self.bid]/float(self.maxBidInQueue))/float(Set.bidDegree)) ) )
+                                       ,reverse=True )
 
 
 
@@ -196,7 +211,7 @@ class ClassSchduler:
                                                                    (resource[self.rMem] - (
                                                                    eachExec[self.mem])) ** 2
                                                                ) ** (1 / 2.0)
-                                                               ))  # , reverse=True)
+                                                               ))
                         self.VMs2address = eachExec[self.numVM]
                         for i in range(self.VMs2address):
                             # print("VMs2address: ",VMs2address)
@@ -217,7 +232,7 @@ class ClassSchduler:
                                                                        (resource[self.rMem] - (
                                                                        eachExec[self.mem])) ** 2
                                                                    ) ** (1 / 2.0)
-                                                                   ))  # , reverse=True)
+                                                                   ))
                         ### <<< end of evaluation
                         if self.VMs2address == 0:  # all requested VMs can be addressed
                             if Set.debugDetail:
@@ -239,7 +254,7 @@ class ClassSchduler:
                                                                        (resource[self.rMem] - (
                                                                            eachExec[self.mem])) ** 2
                                                                    ) ** (1 / 2.0)
-                                                                   ))  # , reverse=True)
+                                                                   ))
                             self.VMs2address = eachExec[self.numVM]
                             for i in range(self.VMs2address):
                                 for res in self.evaluateCurrentResource:
@@ -300,18 +315,20 @@ class ClassSchduler:
                 for res in self.resources:
                     self.avail = self.avail + res[self.rCore]
 
-                for waiting in self.arrivalQueue:
-                    deadline=waiting[self.deadline]
-                    arrival= waiting[self.arrival]
-                    waiting[self.execs].sort(key=lambda x: ((float(self.timeStamp + x[self.runtime]) / float(
-                                                 deadline+ arrival))
-                                             + ( self.avail/float(Set.capacity) )*( (x[self.VMcore]*(1+x[self.numVM]))/float( 1*8*6 ) )))#, reverse=True)  # not sorting for now
-
                 self.arrivalQueue.sort(key=(lambda x:
                                             ((float(self.timeStamp + x[self.execs][self.head][self.runtime]) / float(
                                                 x[self.deadline] + job[self.arrival]))
                                              + ((x[self.bid] / float(self.maxBidInQueue)) / float(Set.bidDegree))))
                                        , reverse=True)
+
+                for waiting in self.arrivalQueue:
+                    deadline=waiting[self.deadline]
+                    arrival= waiting[self.arrival]
+                    waiting[self.execs].sort(key=lambda x: ((float(self.timeStamp + x[self.runtime]) / float(
+                                                 deadline+ arrival))
+                                             + ( self.avail/float(Set.capacity) )*( (x[self.VMcore]*(1+x[self.numVM]))/float( 16 ) )))#, reverse=True)  # not sorting for now
+
+
 
                 self.evaluateScaleability = []
                 self.shadowQueue = copy.deepcopy(self.arrivalQueue)
@@ -325,7 +342,7 @@ class ClassSchduler:
                     arrival= waiting[self.arrival]
                     waiting[self.execs].sort(key=lambda x: ((float(self.timeStamp + x[self.runtime]) / float(
                                                  deadline+ arrival))
-                                             + ( self.avail/float(Set.capacity) )*( (x[self.VMcore]*(1+x[self.numVM]))/float( 1*8*6 ) )))#, reverse=True)  # not sorting for now
+                                             + ( self.avail/float(Set.capacity) )*( (x[self.VMcore]*(1+x[self.numVM]))/float( 16 ) )))#, reverse=True)  # not sorting for now
 
                     self.addressed = False
                     #waiting[self.execs].sort(key=lambda x: x[2])  # not sorting for now
@@ -438,7 +455,7 @@ class ClassSchduler:
                             if Set.debugDetail:
                                 print("     current resources: ", self.resources)
 
-
+                """
                 if Set.MEO:
 
                     if Set.debug:
@@ -459,8 +476,13 @@ class ClassSchduler:
                     while len(self.evaluateScaleability)!=0:
                         # evaluateScaleability.append([waiting]) # numVMs, numCores ?
 
+                        for waiting in self.evaluateScaleability:
+                            deadline = waiting[self.deadline]
+                            arrival = waiting[self.arrival]
+                            waiting[self.execs].sort(key=lambda x: x[2])  # , reverse=True)  # not sorting for now
+
                         self.evaluateScaleability.sort(key=(#(lambda  x:x[self.execs][self.head])   ######################################====
-                        lambda x: (x[self.execs][self.head][self.runtime]+float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
+                        lambda x: (float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
                                    / float(x[self.execs][self.head+1][self.runtime]*x[self.execs][self.head+1][self.numVM]*x[self.execs][self.head+1][self.VMcore])))
                         ,reverse=True)#x[self.execs][self.head][self.runtime]+
                         if Set.debugLevel2:
@@ -586,6 +608,7 @@ class ClassSchduler:
                                 self.notScaleable.append(job)
                         for job in self.notScaleable:
                             self.evaluateScaleability.remove(job)
+                """
 
 
 
@@ -947,3 +970,53 @@ class ClassSchduler:
                 )**(1/2.0)
         #print(sortFactor)
         return (sortFactor)
+
+    def Fi(x,timeStamp):
+        head = 0
+        arrival = 0
+        execs = 1
+        runtime = 2
+        deadline = 2
+        bid = 3
+        mem = 3
+        id = 4
+        #x[execs][0]
+        max=0
+        for pointer in list(range(1,len(x[execs]),1)):
+            #print(pointer)
+            temp=x[bid]/float(ClassSchduler.minSlope(x[execs],int(pointer))*(timeStamp+x[deadline]-x[arrival])*(x[execs][pointer][runtime])*ClassSchduler.minResourceUsageRation(x[execs],int(pointer)))
+            if temp>max:
+                max=temp
+        return(max)
+
+    def minSlope(execs,pointer):
+
+        head = 0
+        arrival = 0
+        execs = 1
+        runtime = 2
+        deadline = 2
+        bid = 3
+        mem = 3
+        id = 4
+        numVM = 0
+        VMcore = 1
+        mem=3
+        cpuSlope=0
+        memSlope=0
+        print(type(pointer),type(runtime),type(numVM),type(VMcore),print(execs),type(execs))
+        cpuSlope=(execs[pointer][runtime]-execs[pointer-1][runtime])/float(execs[pointer][numVM]*execs[pointer][VMcore]-execs[pointer-1][numVM]*execs[pointer-1][VMcore])
+        memSlope=(execs[pointer][runtime]-execs[pointer-1][runtime])/float(execs[pointer][numVM]*execs[pointer][mem]-execs[pointer-1][numVM]*execs[pointer-1][mem])
+        return (min([cpuSlope,memSlope]))
+    def minResourceUsageRation(execs,pointer):
+        numVM = 0
+        VMcore = 1
+        mem = 3
+        rCore=0
+        rMem=1
+        min=1000
+        for resource in Set.resources:
+            temp=(execs[pointer][numVM]*execs[pointer][mem]/float(resource[rMem]))+ (execs[pointer][numVM] * execs[pointer][VMcore] / float(resource[rCore]))
+            if min> temp:
+                min=temp
+        return(min)
