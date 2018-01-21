@@ -5,9 +5,9 @@ import SchedulerEmulator.Main as Mainfile
 
 
 
-location = np.arange(7)
+location = np.arange(4)
 #load=["40-160","50-170","60-180","70-190","80-200","90-210","100-220 [3-1]"]
-load=["40","50","60","70","80","90","100" "[4/1+80 70-140]"]
+load=["40","50","60","70 [4/1+120 70-140]"]
 
 
 
@@ -54,7 +54,7 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
     avggreedyFirstUnusedMemArray=[]
 
 
-    for loadRatio in range(40,100+Set.loadInc,Set.loadInc): ############################################################# load
+    for loadRatio in range(40,70+Set.loadInc,Set.loadInc): ############################################################# load
         Set.avgSysLoad=loadRatio/100.0
         #print("Set.avgSysLoad",Set.avgSysLoad)
 

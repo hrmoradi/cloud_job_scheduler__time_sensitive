@@ -32,10 +32,10 @@ class ClassJobCreator:
         for i in range(Set.NumberOfTimeInterval): # Creating Time intervals
             randomCapScale=0
 
-            if i%4==0:
-                randomCapScale= (Set.avgSysLoad+2*Set.fluctuation)#Set.avgSysLoad+(Set.fluctuation*0.75),
+            if i%10==0:
+                randomCapScale= (Set.avgSysLoad+3*Set.fluctuation)#Set.avgSysLoad+(Set.fluctuation*0.75),
             else:
-                randomCapScale = (Set.avgSysLoad-Set.fluctuation)
+                randomCapScale = (Set.avgSysLoad)
 
             #randomCapScale = random.uniform(Set.avgSysLoad - Set.fluctuation, Set.avgSysLoad + Set.fluctuation)
             cap = float(randomCapScale*Set.eachTimeInterval*Set.capacity)

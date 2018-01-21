@@ -287,8 +287,8 @@ class ClassSchduler:
 
 
             """ new algorithm """ # new
-
-            if (Set.greedy is False and Set.MEO is True):
+            if False:
+            #if (Set.greedy is False and Set.MEO is True):
 
                 if once==0:
                     print("*****************************new alg.")
@@ -412,8 +412,8 @@ class ClassSchduler:
                 
 
             """old alg + F L"""""""evaluate and apply addressability of job and put in resource POOL """ # not Greedy
-
-            if (Set.greedy and Set.MEO ) is False:#
+            if Set.greedy is False:
+            #if (Set.greedy and Set.MEO ) is False:#
                 if once==0:
                     print("*****************************F or L")
                     once=1
