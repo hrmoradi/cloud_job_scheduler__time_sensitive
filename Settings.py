@@ -21,8 +21,8 @@ numberOfIteration = 1
 
 
 """jobCreator Constants"""
-randJob=fx
-tableJob= tx
+randJob=tx
+tableJob= fx
 
 capacity = 80 ########################################################
 capMem= 256
@@ -32,7 +32,7 @@ loadInc=10
 
 NumberOfTimeInterval=1000 ##############################################
 eachTimeInterval=10
-maxRunTime=100 ###########################################################
+maxRunTime=50 ###########################################################
 minRuntime=5
 #vmCores = [2,4,8,16] ###################################################
 deadLineMin =2 #########################################################

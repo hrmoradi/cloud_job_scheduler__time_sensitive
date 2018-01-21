@@ -4,7 +4,7 @@ import time
 import copy
 
 class ClassSchduler:
-
+    once2=0
 
     def MainScheduler(self,jobList,resources ):
         self.jobList=copy.deepcopy(jobList)
@@ -152,10 +152,10 @@ class ClassSchduler:
 
 
 
-            """Sorting arrivalQueue """
+            """ Sorting arrivalQueue """
 
             #Sorted Queue
-            if Set.greedy is True:
+            if Set.fx:#Set.greedy is True:
                 self.maxBidInQueue=0
                 for item in self.arrivalQueue:
                     if item[self.bid]>self.maxBidInQueue:
@@ -169,7 +169,7 @@ class ClassSchduler:
                                              )
                                        ,reverse=True )
             #print(arrivalQueue)
-            if Set.greedy is False:
+            if Set.tx:#Set.greedy is False:
                 self.maxBidInQueue=0
                 for item in self.arrivalQueue:
                     if item[self.bid]>self.maxBidInQueue:
@@ -188,11 +188,14 @@ class ClassSchduler:
             """ Greedy algorithm""" # greedy
 
             if Set.greedy is True:
+                if once==0:
+                    print("*****************************greedy.")
+                    once=1
                 self.evaluateScaleability = []
                 self.shadowQueue = copy.deepcopy(self.arrivalQueue)
                 for waiting in self.shadowQueue:
                     self.addressed = False
-                    waiting[self.execs].sort(key=lambda x: x[2])  # not sorting for now
+                    waiting[self.execs].sort(key=lambda x: x[2])
                     if Set.debugLevel2:
                        print(waiting[self.execs])
 
@@ -204,14 +207,15 @@ class ClassSchduler:
                         ### <<< evaluation
                         self.evaluateCurrentResource = copy.deepcopy(
                             self.resources)  # copy resources so changes do not apply for evaluation
-                        self.evaluateCurrentResource.sort(key=(lambda resource:
+                        self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))
+                        """(key=(lambda resource:
                                                                (
                                                                    (resource[self.rCore] - (
                                                                    eachExec[self.VMcore])) ** 2 +
                                                                    (resource[self.rMem] - (
                                                                    eachExec[self.mem])) ** 2
                                                                ) ** (1 / 2.0)
-                                                               ))
+                                                               ))"""
                         self.VMs2address = eachExec[self.numVM]
                         for i in range(self.VMs2address):
                             # print("VMs2address: ",VMs2address)
@@ -225,14 +229,7 @@ class ClassSchduler:
                                     # print("if a res[rCore]", res[rCore])
                                     break
                             # print("for res end res[rCore]", res[rCore])
-                            self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                   (
-                                                                       (resource[self.rCore] - (
-                                                                       eachExec[self.VMcore])) ** 2 +
-                                                                       (resource[self.rMem] - (
-                                                                       eachExec[self.mem])) ** 2
-                                                                   ) ** (1 / 2.0)
-                                                                   ))
+                            self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))
                         ### <<< end of evaluation
                         if self.VMs2address == 0:  # all requested VMs can be addressed
                             if Set.debugDetail:
@@ -247,14 +244,7 @@ class ClassSchduler:
                             ### >>> apply
                             self.evaluateCurrentResource = copy.deepcopy(self.resources)
                             # print("evaluateCurrentResource Second:",evaluateCurrentResource)
-                            self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                   (
-                                                                       (resource[self.rCore] - (
-                                                                           eachExec[self.VMcore])) ** 2 +
-                                                                       (resource[self.rMem] - (
-                                                                           eachExec[self.mem])) ** 2
-                                                                   ) ** (1 / 2.0)
-                                                                   ))
+                            self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))
                             self.VMs2address = eachExec[self.numVM]
                             for i in range(self.VMs2address):
                                 for res in self.evaluateCurrentResource:
@@ -271,15 +261,7 @@ class ClassSchduler:
                                         # print("res[id], reserved",res[id],res,reserved)
                                         self.pools[res[self.id]] = self.reserved
                                         break
-                                self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                       (
-                                                                           (resource[self.rCore] - (
-                                                                               eachExec[
-                                                                                   self.VMcore])) ** 2 +
-                                                                           (resource[self.rMem] - (
-                                                                               eachExec[self.mem])) ** 2
-                                                                       ) ** (1 / 2.0)
-                                                                       ))  # , reverse=True)
+                                self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))  # , reverse=True)
                             self.evaluateScaleability.append(
                                 waiting)  # this job is addressed and should be evaluated for Scalibility
                             self.jobsAddressed.append(waiting)
@@ -304,7 +286,8 @@ class ClassSchduler:
 
 
 
-            """ new algorithm""" # new
+            """ new algorithm """ # new
+
             if (Set.greedy is False and Set.MEO is True):
 
                 if once==0:
@@ -315,11 +298,7 @@ class ClassSchduler:
                 for res in self.resources:
                     self.avail = self.avail + res[self.rCore]
 
-                self.arrivalQueue.sort(key=(lambda x:
-                                            ((float(self.timeStamp + x[self.execs][self.head][self.runtime]) / float(
-                                                x[self.deadline] + job[self.arrival]))
-                                             + ((x[self.bid] / float(self.maxBidInQueue)) / float(Set.bidDegree))))
-                                       , reverse=True)
+
 
                 for waiting in self.arrivalQueue:
                     deadline=waiting[self.deadline]
@@ -327,7 +306,11 @@ class ClassSchduler:
                     waiting[self.execs].sort(key=lambda x: ((float(self.timeStamp + x[self.runtime]) / float(
                                                  deadline+ arrival))
                                              + ( self.avail/float(Set.capacity) )*( (x[self.VMcore]*(1+x[self.numVM]))/float( 16 ) )))#, reverse=True)  # not sorting for now
-
+                self.arrivalQueue.sort(key=(lambda x:
+                                            ((float(self.timeStamp + x[self.execs][self.head][self.runtime]) / float(
+                                                x[self.deadline] + job[self.arrival]))
+                                             + ((x[self.bid] / float(self.maxBidInQueue)) / float(Set.bidDegree))))
+                                       , reverse=True)
 
 
                 self.evaluateScaleability = []
@@ -357,14 +340,7 @@ class ClassSchduler:
                         ### <<< evaluation
                         self.evaluateCurrentResource = copy.deepcopy(
                             self.resources)  # copy resources so changes do not apply for evaluation
-                        self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                               (
-                                                                   (resource[self.rCore] - (
-                                                                   eachExec[self.VMcore])) ** 2 +
-                                                                   (resource[self.rMem] - (
-                                                                   eachExec[self.mem])) ** 2
-                                                               ) ** (1 / 2.0)
-                                                               ))  # , reverse=True)
+                        self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))
                         self.VMs2address = eachExec[self.numVM]
                         for i in range(self.VMs2address):
                             # print("VMs2address: ",VMs2address)
@@ -378,14 +354,7 @@ class ClassSchduler:
                                     # print("if a res[rCore]", res[rCore])
                                     break
                             # print("for res end res[rCore]", res[rCore])
-                            self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                   (
-                                                                       (resource[self.rCore] - (
-                                                                       eachExec[self.VMcore])) ** 2 +
-                                                                       (resource[self.rMem] - (
-                                                                       eachExec[self.mem])) ** 2
-                                                                   ) ** (1 / 2.0)
-                                                                   ))  # , reverse=True)
+                            self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))
                         ### <<< end of evaluation
                         if self.VMs2address == 0:  # all requested VMs can be addressed
                             if Set.debugDetail:
@@ -400,14 +369,7 @@ class ClassSchduler:
                             ### >>> apply
                             self.evaluateCurrentResource = copy.deepcopy(self.resources)
                             # print("evaluateCurrentResource Second:",evaluateCurrentResource)
-                            self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                   (
-                                                                       (resource[self.rCore] - (
-                                                                           eachExec[self.VMcore])) ** 2 +
-                                                                       (resource[self.rMem] - (
-                                                                           eachExec[self.mem])) ** 2
-                                                                   ) ** (1 / 2.0)
-                                                                   ))  # , reverse=True)
+                            self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))
                             self.VMs2address = eachExec[self.numVM]
                             for i in range(self.VMs2address):
                                 for res in self.evaluateCurrentResource:
@@ -424,15 +386,7 @@ class ClassSchduler:
                                         # print("res[id], reserved",res[id],res,reserved)
                                         self.pools[res[self.id]] = self.reserved
                                         break
-                                self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                       (
-                                                                           (resource[self.rCore] - (
-                                                                               eachExec[
-                                                                                   self.VMcore])) ** 2 +
-                                                                           (resource[self.rMem] - (
-                                                                               eachExec[self.mem])) ** 2
-                                                                       ) ** (1 / 2.0)
-                                                                       ))  # , reverse=True)
+                                self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResourcesEachexec(resource,eachExec)))  # , reverse=True)
                             self.evaluateScaleability.append(
                                 waiting)  # this job is addressed and should be evaluated for Scalibility
                             self.jobsAddressed.append(waiting)
@@ -455,167 +409,14 @@ class ClassSchduler:
                             if Set.debugDetail:
                                 print("     current resources: ", self.resources)
 
-                """
-                if Set.MEO:
+                
 
-                    if Set.debug:
-                        print("\n     Evaluate and apply scalability")
-                    time.sleep(Set.sleepTime)
-                    self.notScaleable = []                 # first remove jobs with one execution option
-                    for job in self.evaluateScaleability:
-                        if Set.debug:
-                            print("         job in evaluate scalability: ",job)
-                        self.execsList= job[self.execs]
-                        if len(self.execsList) == 1:
-                            self.notScaleable.append(job)
-                            if Set.debugLevel2:
-                                print("this job is not scalable 1 exec left:",job)
-                    for job in self.notScaleable:
-                        self.evaluateScaleability.remove(job)
+            """old alg + F L"""""""evaluate and apply addressability of job and put in resource POOL """ # not Greedy
 
-                    while len(self.evaluateScaleability)!=0:
-                        # evaluateScaleability.append([waiting]) # numVMs, numCores ?
-
-                        for waiting in self.evaluateScaleability:
-                            deadline = waiting[self.deadline]
-                            arrival = waiting[self.arrival]
-                            waiting[self.execs].sort(key=lambda x: x[2])  # , reverse=True)  # not sorting for now
-
-                        self.evaluateScaleability.sort(key=(#(lambda  x:x[self.execs][self.head])   ######################################====
-                        lambda x: (float(x[self.execs][self.head][self.runtime]*x[self.execs][self.head][self.numVM]*x[self.execs][self.head][self.VMcore])
-                                   / float(x[self.execs][self.head+1][self.runtime]*x[self.execs][self.head+1][self.numVM]*x[self.execs][self.head+1][self.VMcore])))
-                        ,reverse=True)#x[self.execs][self.head][self.runtime]+
-                        if Set.debugLevel2:
-                            print("     id: ",self.evaluateScaleability[self.head][self.id]," Scalability Factor: ",(self.evaluateScaleability[self.head][self.execs][self.head][self.runtime]*self.evaluateScaleability[self.head][self.execs][self.head][self.numVM]*self.evaluateScaleability[self.head][self.execs][self.head][self.VMcore]) / float(self.evaluateScaleability[self.head][self.execs][self.head+1][self.runtime]*self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]*self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))
-
-                        ### <<< evaluation
-
-                        self.shadowPools= copy.deepcopy(self.pools)
-                        self.shadowResources = copy.deepcopy(self.resources)
-
-                        for key in self.shadowPools.keys():  # for each pool ( each resource) # key is ID of resource
-                            self.thisPool = self.shadowPools.get(key)
-                            self.shouldBeRemoved = []  # creating array of jobs which should be removed for each pool (each resource)
-                            for job in self.thisPool:
-                                # reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
-                                if job[3] == self.evaluateScaleability[self.head][self.id]:  # if job finished
-                                    if Set.debugLevel2:
-                                        print("                         remove from pool to evaluate resource: ", key, " job ID: " ,job[3]," head execs: ",self.evaluateScaleability[self.head][self.execs][self.head])
-
-                                    for res in self.shadowResources:  # returning used resource to pool
-                                        if res[self.id] == key:
-                                            res[self.rCore] = res[self.rCore] + job[0]
-                                            res[self.rMem] = res[self.rMem] + job[4]
-                                    self.shouldBeRemoved.append(job)  # collect jobs that SHOULD BE  removed
-                            for job in self.shouldBeRemoved:
-                                self.thisPool.remove(job)  # remove collected jobs
-
-
-                        self.VMs2address = self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]
-                        self.shadowResources.sort(key=(lambda resource: ClassSchduler.EDsortResources(resource,self.evaluateScaleability[self.head])))
-                                                      # (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
-                        for i in range(self.VMs2address):
-                            # print("VMs2address: ",VMs2address)
-                            for res in self.shadowResources:
-                                # print("res: ",res)
-                                if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]) and res[self.rMem] >= (self.evaluateScaleability[self.head][self.execs][self.head + 1][self.mem])): # !!!!!!!!!!!!!!! MEM!!!
-                                    self.VMs2address = self.VMs2address - 1
-                                    # print("if b res[rCore]",res[rCore])
-                                    res[self.rCore] = res[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
-                                    res[self.rMem] = res[self.rMem] - (self.evaluateScaleability[self.head][self.execs][self.head + 1][self.mem])
-                                    # print("if a res[rCore]", res[rCore])
-                                    break
-                            # print("for res end res[rCore]", res[rCore])
-                            self.shadowResources.sort(key=(lambda resource: ClassSchduler.EDsortResources(resource,self.evaluateScaleability[self.head])))
-                                                           #(resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # ,reverse=True)
-
-                        ### <<< end of evaluation
-
-                        if self.VMs2address == 0:
-
-                            ### >>> apply
-                            ### >>>>>>>>> remove old exec option option
-                            for key in self.pools.keys():  # for each pool ( each resource) # key is ID of resource
-                                self.thisPool = self.pools.get(key)
-                                self.shouldBeRemoved = []  # creating array of jobs which should be removed for each pool (each resource)
-                                for job in self.thisPool:
-                                    # reserved.append([waiting[execs][head][VMcore],waiting[execs][head][runtime],waiting[bid],waiting[id]])
-                                    if job[3] == self.evaluateScaleability[self.head][self.id]:  # if job finished
-                                        if Set.debug:
-                                            print("                         remove from pool (applicalable): resource: ", key, " job ID:", job[3],
-                                              " Execs: ", self.evaluateScaleability[self.head][self.execs][self.head])
-                                        self.shouldBeRemoved.append(job)
-                                        for res in self.resources:  # returning used resource to pool
-                                            if res[self.id] == key:
-                                                res[self.rCore] = res[self.rCore] + job[0]
-                                                res[self.rMem] = res[self.rMem] + job[4]
-                                          # collect jobs that SHOULD BE  removed
-                                for job in self.shouldBeRemoved:
-                                    self.thisPool.remove(job)  # remove collected jobs
-                            ### >>>>>>>>> remove old exec option option
-
-                            if Set.debugLevel2:
-                                print("         Scalability current resources: ", self.resources)
-                                print("         Scalability addressable job with ID: ", self.evaluateScaleability[self.head][self.id], " numVMs requested: ",
-                                  self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM])
-
-                            ### >>> apply new execs
-                            self.evaluateCurrentResource = copy.deepcopy(self.resources)
-                            # print("evaluateCurrentResource Second:",evaluateCurrentResource)
-                            self.shadowResources.sort(key=(
-                            lambda resource: ClassSchduler.EDsortResources(resource, self.evaluateScaleability[self.head])))
-                            # (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
-                            if Set.debugDetail:
-                                print(self.evaluateCurrentResource)
-                            self.VMs2address = self.evaluateScaleability[self.head][self.execs][self.head+1][self.numVM]
-                            for i in range(self.VMs2address):
-                                for res in self.evaluateCurrentResource:
-                                    if (res[self.rCore] >= (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]) # !!!!!!!!!!!!!!!!!!11   MEM!!!
-                                        and
-                                                res[self.rMem] >= (
-                                            self.evaluateScaleability[self.head][self.execs][self.head + 1][
-                                                self.mem])):
-                                        self.VMs2address = self.VMs2address - 1
-                                        # print("if b res[rCore]", res[rCore])
-                                        res[self.rCore] = res[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore])
-                                        res[self.rMem] = res[self.rMem] - (self.evaluateScaleability[self.head][self.execs][self.head + 1][self.mem])
-                                        # print("if a res[rCore]", res[rCore])
-                                        self.reserved = self.pools[res[self.id]]
-                                        self.reserved.append(
-                                            [self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore], self.evaluateScaleability[self.head][self.execs][self.head+1][self.runtime], self.evaluateScaleability[self.head][self.bid],
-                                             self.evaluateScaleability[self.head][self.id],self.evaluateScaleability[self.head][self.execs][self.head+1][self.mem]])
-                                        # print("res[id], reserved",res[id],res,reserved)
-                                        self.pools[res[self.id]] = self.reserved
-                                        if Set.debug:
-                                            print("***after Scale putting in pools: " ,self.pools[res[self.id]])
-                                        break
-                                self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResources(resource,self.evaluateScaleability[self.head])))
-                                  #                                     (resource[self.rCore] - (self.evaluateScaleability[self.head][self.execs][self.head+1][self.VMcore]))))  # , reverse=True)
-                            self.jobsScaled.append(self.evaluateScaleability[self.head])
-                            self.resources = copy.deepcopy(self.evaluateCurrentResource)
-                            if Set.debugLevel2:
-                                print("         Scalability reduced resources: ", self.resources)
-                            self.evaluateScaleability[self.head][self.execs].remove(self.evaluateScaleability[self.head][self.execs][self.head])
-                        else:
-                            self.evaluateScaleability[self.head][self.execs].remove(self.evaluateScaleability[self.head][self.execs][self.head+1])
-                            ### >>> end of apply
-
-
-                        self.notScaleable = []  # first remove jobs with one execution option
-                        for job in self.evaluateScaleability:
-                            self.execsList = job[self.execs]
-                            if len(self.execsList) == 1:
-                                self.notScaleable.append(job)
-                        for job in self.notScaleable:
-                            self.evaluateScaleability.remove(job)
-                """
-
-
-
-
-            """evaluate and apply addressability of job and put in resource POOL """ # not Greedy
-
-            if (Set.greedy and Set.MEO )is False:
+            if (Set.greedy and Set.MEO ) is False:#
+                if once==0:
+                    print("*****************************F or L")
+                    once=1
                 self.evaluateScaleability=[]
                 self.shadowQueue =copy.deepcopy(self.arrivalQueue)
                 for waiting in self.shadowQueue:
@@ -623,12 +424,7 @@ class ClassSchduler:
                         print("\n     arrival queue head: ",waiting)
                     ### <<< evaluation
                     self.evaluateCurrentResource = copy.deepcopy(self.resources) # copy resources so changes do not apply for evaluation
-                    self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                           (
-                                                           (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore]))**2 +
-                                                           (resource[self.rMem] - (waiting[self.execs][self.head][self.mem])) ** 2
-                                                           )**(1/2.0)
-                                                           ))#, reverse=True)
+                    self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResources(resource,self.shadowQueue[self.head])))
                     self.VMs2address = waiting[self.execs][self.head][self.numVM]
                     for i in range(self.VMs2address):
                         #print("VMs2address: ",VMs2address)
@@ -642,12 +438,7 @@ class ClassSchduler:
                                 #print("if a res[rCore]", res[rCore])
                                 break
                         #print("for res end res[rCore]", res[rCore])
-                        self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                               (
-                                                                   (resource[self.rCore] - (waiting[self.execs][self.head][self.VMcore])) ** 2 +
-                                                                   (resource[self.rMem] - (waiting[self.execs][self.head][self.mem])) ** 2
-                                                               ) ** (1 / 2.0)
-                                                               ))  # , reverse=True)
+                        self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResources(resource,self.shadowQueue[self.head])))
                     ### <<< end of evaluation
                     if self.VMs2address ==0:                   # all requested VMs can be addressed
                         if Set.debugDetail:
@@ -661,14 +452,7 @@ class ClassSchduler:
                         ### >>> apply
                         self.evaluateCurrentResource = copy.deepcopy(self.resources)
                         #print("evaluateCurrentResource Second:",evaluateCurrentResource)
-                        self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                               (
-                                                                   (resource[self.rCore] - (
-                                                                   waiting[self.execs][self.head][self.VMcore])) ** 2 +
-                                                                   (resource[self.rMem] - (
-                                                                   waiting[self.execs][self.head][self.mem])) ** 2
-                                                               ) ** (1 / 2.0)
-                                                               ))  # , reverse=True)
+                        self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResources(resource,self.shadowQueue[self.head])))
                         self.VMs2address = waiting[self.execs][self.head][self.numVM]
                         for i in range(self.VMs2address):
                             for res in self.evaluateCurrentResource:
@@ -683,14 +467,7 @@ class ClassSchduler:
                                     #print("res[id], reserved",res[id],res,reserved)
                                     self.pools[res[self.id]]=self.reserved
                                     break
-                            self.evaluateCurrentResource.sort(key=(lambda resource:
-                                                                   (
-                                                                       (resource[self.rCore] - (
-                                                                       waiting[self.execs][self.head][self.VMcore])) ** 2 +
-                                                                       (resource[self.rMem] - (
-                                                                       waiting[self.execs][self.head][self.mem])) ** 2
-                                                                   ) ** (1 / 2.0)
-                                                                   ))  # , reverse=True)
+                            self.evaluateCurrentResource.sort(key=(lambda resource:ClassSchduler.EDsortResources(resource,self.shadowQueue[self.head])))
                         self.evaluateScaleability.append(waiting) # this job is addressed and should be evaluated for Scalibility
                         self.jobsAddressed.append(waiting)
                         self.collectedBid=self.collectedBid+waiting[self.bid]
@@ -954,7 +731,10 @@ class ClassSchduler:
         return ([failed,scaled,unused,gained,area,unusedMem])
 
 
-    def EDsortResources(resourceArray,waitingHead):
+    def EDsortResources_Old(resourceArray,waitingHead):
+        if ClassSchduler.once2 == 0:
+            print("*****************************ed old.")
+            ClassSchduler.once2 = 1
         numVM = 0
         VMcore = 1
         rCore = 0
@@ -970,7 +750,44 @@ class ClassSchduler:
                 )**(1/2.0)
         #print(sortFactor)
         return (sortFactor)
-
+    def EDsortResources(resourceArray,waitingHead):
+        if ClassSchduler.once2 == 0:
+            print("*****************************ed.")
+            ClassSchduler.once2 = 1
+        numVM = 0
+        VMcore = 1
+        rCore = 0
+        rMem = 1
+        head = 0
+        execs = 1
+        mem = 3
+        #print(resourceArray)
+        #print(waitingHead)
+        sortFactor=(
+                 (resourceArray[rCore]/float(resourceArray[rCore]+0.01) - (waitingHead[execs][head][VMcore])/float((waitingHead[execs][head][VMcore])))**2 +
+                 (resourceArray[rMem]/float(resourceArray[rCore]+0.01) - (waitingHead[execs][head][mem])/float((waitingHead[execs][head][VMcore]))) ** 2
+                )**(1/2.0)
+        #print(sortFactor)
+        return (sortFactor)
+    def EDsortResourcesEachexec(resourceArray,waitingHead):
+        if ClassSchduler.once2 == 0:
+            print("*****************************ed each exec.")
+            ClassSchduler.once2 = 1
+        numVM = 0
+        VMcore = 1
+        rCore = 0
+        rMem = 1
+        head = 0
+        execs = 1
+        mem = 3
+        #print(resourceArray)
+        #print(waitingHead)
+        sortFactor=(
+                 (resourceArray[rCore]/float(resourceArray[rCore]+0.01) - (waitingHead[VMcore])/float((waitingHead[VMcore])))**2 +
+                 (resourceArray[rMem]/float(resourceArray[rCore]+0.01) - (waitingHead[mem])/float((waitingHead[VMcore]))) ** 2
+                )**(1/2.0)
+        #print(sortFactor)
+        return (sortFactor)
     def Fi(x,timeStamp):
         head = 0
         arrival = 0
@@ -1006,8 +823,8 @@ class ClassSchduler:
         cpuSlope=0
         memSlope=0
         #print("test2",print(execs),type(execs))
-        cpuSlope=(execsArray[pointer][runtime]-execsArray[pointer-1][runtime])/(float(execsArray[pointer][numVM]*execsArray[pointer][VMcore]-execsArray[pointer-1][numVM]*execsArray[pointer-1][VMcore])+0.1)
-        memSlope=(execsArray[pointer][runtime]-execsArray[pointer-1][runtime])/(float(execsArray[pointer][numVM]*execsArray[pointer][mem]-execsArray[pointer-1][numVM]*execsArray[pointer-1][mem])+0.1)
+        cpuSlope=abs(execsArray[pointer][runtime]-execsArray[pointer-1][runtime])/abs(float(execsArray[pointer][numVM]*execsArray[pointer][VMcore]-execsArray[pointer-1][numVM]*execsArray[pointer-1][VMcore])+0.01)
+        memSlope=abs(execsArray[pointer][runtime]-execsArray[pointer-1][runtime])/abs(float(execsArray[pointer][numVM]*execsArray[pointer][mem]-execsArray[pointer-1][numVM]*execsArray[pointer-1][mem])+0.01)
         return (min([cpuSlope,memSlope]))
     def minResourceUsageRation(execsArray,pointer):
         numVM = 0
@@ -1017,7 +834,7 @@ class ClassSchduler:
         rMem=1
         min=1000
         for resource in Set.resources:
-            temp=(execsArray[pointer][numVM]*execsArray[pointer][mem]/(float(resource[rMem])+1)+ (execsArray[pointer][numVM] * execsArray[pointer][VMcore] / (float(resource[rCore])+1)))
+            temp=(execsArray[pointer][numVM]*execsArray[pointer][mem]/(float(resource[rMem])+0.01)+ (execsArray[pointer][numVM] * execsArray[pointer][VMcore] / (float(resource[rCore])+0.01)))
             if min> temp:
                 min=temp
         return(min)
