@@ -71,6 +71,9 @@ for i in range(len(minLoadArray)):
         avgDakaiGreedyUnusedMemArray=[]
 
 
+
+        """ generate sparks """
+
         for x in [3,5,7,9,11,21]:#["2-1","4-1","6-1","8-1","10-1","20-1"] ############################################################# load
             Set.dakaiX=x
             #print("Set.avgSysLoad",Set.avgSysLoad)
@@ -129,117 +132,123 @@ for i in range(len(minLoadArray)):
             avggreedyFirstUnusedMemArray.append(avggreedyFirstUnusedMem)
             avgDakaiGreedyUnusedMemArray.append(avgDakaiGreedyUnusedMem)
 
-        """ cp: core area percentage """
-        plt.bar(location - 0.2, lfcpArray, align="center", width=0.1, color="lightcoral")
-        plt.bar(location - 0.1, ffcpArray, align="center", width=0.1, color="k")
-        plt.bar(location, mfcpArray, align="center", width=0.1, color="springgreen")
-        plt.bar(location + 0.1, gfcpArray, align="center", width=0.1, color="g")
-        plt.bar(location + 0.2, dfcpArray, align="center", width=0.1, color="r")
-        plt.xticks(location, load)
-        plt.yticks(np.arange(0, 50, 5))
-        plt.ylabel("% Discarded Core*time Area")
-        plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
-        title4Plot = 'Discarded Core*time  '  # +title
-        title4Plot+=y
-        plt.title(title4Plot)
-        # plt.show()
-        plt.savefig(Set.add+ clusterString[ pointer] +y+ "-discarded-CoreTimePercentage.eps")
-        plt.clf()
 
-        """ mp: memory area percentage """
-        plt.bar(location - 0.2, lfmpArray, align="center", width=0.1, color="lightcoral")
-        plt.bar(location - 0.1, ffmpArray, align="center", width=0.1, color="k")
-        plt.bar(location, mfmpArray, align="center", width=0.1, color="springgreen")
-        plt.bar(location + 0.1, gfmpArray, align="center", width=0.1, color="g")
-        plt.bar(location + 0.2, dfmpArray, align="center", width=0.1, color="r")
-        plt.xticks(location, load)
-        plt.yticks(np.arange(0, 50, 5))
-        plt.ylabel("% Discarded Mem*time Area")
-        plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
-        title4Plot = 'Discarded Mem*time   '  # +title
-        title4Plot += y
-        plt.title(title4Plot)
-        # plt.show()
-        plt.savefig(Set.add+ clusterString[pointer] +y+ "-discarded-MemTimePercentage.eps")
-        plt.clf()
 
-        """ Discarded barchart """
-        plt.bar(location - 0.2, discardedLast, align="center", width=0.1, color="lightcoral")
-        plt.bar(location - 0.1, discardedFirst, align="center", width=0.1, color="k")
-        plt.bar(location, discardedMEO, align="center", width=0.1, color="springgreen")
-        plt.bar(location +0.1, discardedgreedyFirst, align="center", width=0.1, color="g")
-        plt.bar(location + 0.2, discardedDakai, align="center", width=0.1, color="r")
-        plt.xticks(location, load)
-        plt.yticks(np.arange(0, 50, 5))
-        plt.ylabel("% Discarded Jobs")
-        plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
-        title4Plot= 'Discarded JOBS   '#+title
-        title4Plot += y
-        plt.title(title4Plot)
-        #plt.show()
-        plt.savefig(Set.add+ clusterString[pointer] +y+ "-discarded-Job-Percentage.eps")
-        plt.clf()
+        """ generate graphs """
 
-        """ Gained benefit line"""
-        plt.plot(location, bidLast, '.-', color="lightcoral", linewidth=0.4)
-        plt.plot(location, bidFirst, '+-', color="k", linewidth=0.4)
-        plt.plot(location, bidMEO, 'x-', color="springgreen", linewidth=0.4)
-        plt.plot(location , bidgreedyFirst,'-', color="green", linewidth=0.4)
-        plt.plot(location, bidDakai, '.', color="r", linewidth=0.4)
-        plt.xticks(location, load)
-        plt.yticks(np.arange(0, 50, 5))
-        plt.ylabel("% Achived Benefit")
-        plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
-        title4Plot = 'Gained Benefit   '# + title
-        title4Plot += y
-        plt.title(title4Plot)
-        #plt.show()
-        plt.savefig(Set.add+clusterString[pointer] +y+"-gained-Bid-Percentage.eps")
-        plt.clf()
+        if True:
 
-        """ Unused CPU Barchart """
-        plt.bar(location - 0.2, unusedLast, align="center", width=0.1, color="lightcoral")
-        plt.bar(location - 0.1, unusedFirst, align="center", width=0.1, color="k")
-        plt.bar(location,unusedMEO, align="center", width=0.1, color="springgreen")
-        plt.bar(location +0.1, unusedgreedyFirst, align="center", width=0.1, color="g")
-        plt.bar(location + 0.2, unusedDakai, align="center", width=0.1, color="r")
-        plt.xticks(location, load)
-        plt.yticks(np.arange(0, 50, 5))
-        plt.ylabel("% Unused Area")
-        plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
-        title4Plot = 'Unused Area   '# + title
-        title4Plot += y
-        plt.title(title4Plot)
-        #plt.show()
-        plt.savefig(Set.add+clusterString[pointer] +y+ "-unusedArea-CPU-Percentage.eps")
-        plt.clf()
+            """ cp: core area percentage """
+            plt.bar(location - 0.2, lfcpArray, align="center", width=0.1, color="lightcoral")
+            plt.bar(location - 0.1, ffcpArray, align="center", width=0.1, color="k")
+            plt.bar(location, mfcpArray, align="center", width=0.1, color="springgreen")
+            plt.bar(location + 0.1, gfcpArray, align="center", width=0.1, color="g")
+            plt.bar(location + 0.2, dfcpArray, align="center", width=0.1, color="r")
+            plt.xticks(location, load)
+            plt.yticks(np.arange(0, 50, 5))
+            plt.ylabel("% Discarded Core*time Area")
+            plt.xlabel("Load")
+            plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
+            title4Plot = 'Discarded Core*time  '  # +title
+            title4Plot+=y
+            plt.title(title4Plot)
+            # plt.show()
+            plt.savefig(Set.add+ clusterString[ pointer] +y+ "-discarded-CoreTimePercentage.eps")
+            plt.clf()
 
-        """ Unused MEM Barchart """
-        plt.bar(location - 0.2, avgLastUnusedMemArray, align="center", width=0.1, color="lightcoral")
-        plt.bar(location - 0.1, avgFirstUnusedMemArray, align="center", width=0.1, color="k")
-        plt.bar(location, avgMeoUnusedMemArray, align="center", width=0.1, color="springgreen")
-        plt.bar(location + 0.1, avggreedyFirstUnusedMemArray, align="center", width=0.1, color="g")
-        plt.bar(location + 0.2, avgDakaiGreedyUnusedMemArray, align="center", width=0.1, color="r")
-        plt.xticks(location, load)
-        plt.yticks(np.arange(0, 50, 5))
-        plt.ylabel("% Unused Mem Area")
-        plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
-        title4Plot = 'Unused Mem Area   '  # + title
-        title4Plot += y
-        plt.title(title4Plot)
-        # plt.show()
-        plt.savefig(Set.add + clusterString[pointer] +y+ "-unusedArea-MEM-Percentage.eps")
-        plt.clf()
+            """ mp: memory area percentage """
+            plt.bar(location - 0.2, lfmpArray, align="center", width=0.1, color="lightcoral")
+            plt.bar(location - 0.1, ffmpArray, align="center", width=0.1, color="k")
+            plt.bar(location, mfmpArray, align="center", width=0.1, color="springgreen")
+            plt.bar(location + 0.1, gfmpArray, align="center", width=0.1, color="g")
+            plt.bar(location + 0.2, dfmpArray, align="center", width=0.1, color="r")
+            plt.xticks(location, load)
+            plt.yticks(np.arange(0, 50, 5))
+            plt.ylabel("% Discarded Mem*time Area")
+            plt.xlabel("Load")
+            plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
+            title4Plot = 'Discarded Mem*time   '  # +title
+            title4Plot += y
+            plt.title(title4Plot)
+            # plt.show()
+            plt.savefig(Set.add+ clusterString[pointer] +y+ "-discarded-MemTimePercentage.eps")
+            plt.clf()
 
-        plt.title(title)
-        # plt.show()
-        plt.savefig(Set.add+ clusterString[pointer] +y+ "-detail.eps")
+            """ Discarded barchart """
+            plt.bar(location - 0.2, discardedLast, align="center", width=0.1, color="lightcoral")
+            plt.bar(location - 0.1, discardedFirst, align="center", width=0.1, color="k")
+            plt.bar(location, discardedMEO, align="center", width=0.1, color="springgreen")
+            plt.bar(location +0.1, discardedgreedyFirst, align="center", width=0.1, color="g")
+            plt.bar(location + 0.2, discardedDakai, align="center", width=0.1, color="r")
+            plt.xticks(location, load)
+            plt.yticks(np.arange(0, 50, 5))
+            plt.ylabel("% Discarded Jobs")
+            plt.xlabel("Load")
+            plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
+            title4Plot= 'Discarded JOBS   '#+title
+            title4Plot += y
+            plt.title(title4Plot)
+            #plt.show()
+            plt.savefig(Set.add+ clusterString[pointer] +y+ "-discarded-Job-Percentage.eps")
+            plt.clf()
+
+            """ Gained benefit line"""
+            plt.plot(location, bidLast, '.-', color="lightcoral", linewidth=0.4)
+            plt.plot(location, bidFirst, '+-', color="k", linewidth=0.4)
+            plt.plot(location, bidMEO, 'x-', color="springgreen", linewidth=0.4)
+            plt.plot(location , bidgreedyFirst,'-', color="green", linewidth=0.4)
+            plt.plot(location, bidDakai, '.', color="r", linewidth=0.4)
+            plt.xticks(location, load)
+            plt.yticks(np.arange(0, 50, 5))
+            plt.ylabel("% Achived Benefit")
+            plt.xlabel("Load")
+            plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
+            title4Plot = 'Gained Benefit   '# + title
+            title4Plot += y
+            plt.title(title4Plot)
+            #plt.show()
+            plt.savefig(Set.add+clusterString[pointer] +y+"-gained-Bid-Percentage.eps")
+            plt.clf()
+
+            """ Unused CPU Barchart """
+            plt.bar(location - 0.2, unusedLast, align="center", width=0.1, color="lightcoral")
+            plt.bar(location - 0.1, unusedFirst, align="center", width=0.1, color="k")
+            plt.bar(location,unusedMEO, align="center", width=0.1, color="springgreen")
+            plt.bar(location +0.1, unusedgreedyFirst, align="center", width=0.1, color="g")
+            plt.bar(location + 0.2, unusedDakai, align="center", width=0.1, color="r")
+            plt.xticks(location, load)
+            plt.yticks(np.arange(0, 50, 5))
+            plt.ylabel("% Unused Area")
+            plt.xlabel("Load")
+            plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
+            title4Plot = 'Unused Area   '# + title
+            title4Plot += y
+            plt.title(title4Plot)
+            #plt.show()
+            plt.savefig(Set.add+clusterString[pointer] +y+ "-unusedArea-CPU-Percentage.eps")
+            plt.clf()
+
+            """ Unused MEM Barchart """
+            plt.bar(location - 0.2, avgLastUnusedMemArray, align="center", width=0.1, color="lightcoral")
+            plt.bar(location - 0.1, avgFirstUnusedMemArray, align="center", width=0.1, color="k")
+            plt.bar(location, avgMeoUnusedMemArray, align="center", width=0.1, color="springgreen")
+            plt.bar(location + 0.1, avggreedyFirstUnusedMemArray, align="center", width=0.1, color="g")
+            plt.bar(location + 0.2, avgDakaiGreedyUnusedMemArray, align="center", width=0.1, color="r")
+            plt.xticks(location, load)
+            plt.yticks(np.arange(0, 50, 5))
+            plt.ylabel("% Unused Mem Area")
+            plt.xlabel("Load")
+            plt.legend(["Thickest Option", "First Option", "Resource Scale Up", "Thickest Greedy", "First Greedy"])
+            title4Plot = 'Unused Mem Area   '  # + title
+            title4Plot += y
+            plt.title(title4Plot)
+            # plt.show()
+            plt.savefig(Set.add + clusterString[pointer] +y+ "-unusedArea-MEM-Percentage.eps")
+            plt.clf()
+
+            plt.title(title)
+            # plt.show()
+            plt.savefig(Set.add+ clusterString[pointer] +y+ "-detail.eps")
 
 """
 discardedMEO = [4,7,10.2,13.4,16.8,20.5,23.8]

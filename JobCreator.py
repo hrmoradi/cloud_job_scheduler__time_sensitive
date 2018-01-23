@@ -31,13 +31,13 @@ class ClassJobCreator:
         """ for each interval """
         for i in range(Set.NumberOfTimeInterval): # Creating Time intervals
             randomCapScale=0
-
-            if i%Set.dakaiX==0:
-                randomCapScale= (Set.dakaiMaxScale)#Set.avgSysLoad+(Set.fluctuation*0.75),
+            if Set.spark is True:
+                if i%Set.dakaiX==0:
+                    randomCapScale= (Set.dakaiMaxScale)#Set.avgSysLoad+(Set.fluctuation*0.75),
+                else:
+                    randomCapScale = (Set.dakaiMinScale)
             else:
-                randomCapScale = (Set.dakaiMinScale)
-
-            #randomCapScale = random.uniform(Set.avgSysLoad - Set.fluctuation, Set.avgSysLoad + Set.fluctuation)
+                randomCapScale = random.uniform(Set.avgSysLoad - Set.fluctuation, Set.avgSysLoad + Set.fluctuation)
             cap = float(randomCapScale*Set.eachTimeInterval*Set.capacity)
             capMem= float(randomCapScale*Set.eachTimeInterval*Set.capMem) # testing setting cap for mem)
             capSum= capSum+cap

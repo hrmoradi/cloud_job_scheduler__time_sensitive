@@ -17,15 +17,17 @@ sleepTime =0.0
 
 """ Main Constants"""
 numberOfIteration = 3
+spark=False ########################################################## !!!!!!!!!!!!!!!!!!!!!!
 dakaiX=0
 dakaiMinScale=0
 dakaiMaxScale=0
 
 
 
+
 """jobCreator Constants"""
-randJob=tx
-tableJob= fx
+randJob=fx ########################################################## !!!!!!!!!!!!!!!!!!!!!!!!
+tableJob= tx
 
 capacity = 80 ########################################################
 capMem= 256
