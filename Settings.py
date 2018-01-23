@@ -16,7 +16,10 @@ sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 1
+numberOfIteration = 3
+dakaiX=0
+dakaiMinScale=0
+dakaiMaxScale=0
 
 
 
@@ -32,8 +35,8 @@ loadInc=10
 
 NumberOfTimeInterval=1000 ##############################################
 eachTimeInterval=10
-maxRunTime=140 ###########################################################
-minRuntime=70
+maxRunTime=200 ###########################################################
+minRuntime=0
 #vmCores = [2,4,8,16] ###################################################
 deadLineMin =2 #########################################################
 deadLineMax=4 # was 6 for results of friday

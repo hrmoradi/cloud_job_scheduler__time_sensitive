@@ -11,6 +11,7 @@ class MainClass:
         first=[]
         last=[]
         greedyFirst=[]
+        dakaiGreedy=[]
 
         failed=0
         scaled=1
@@ -40,6 +41,7 @@ class MainClass:
             Set.MEO = True
             Set.lastOption = False
             Set.greedy=False
+            Set.Firstgreedy=False
             EmulateMEO =CS()
             results=EmulateMEO.MainScheduler(jobList,Set.resources)
             meo.append(results)
@@ -49,6 +51,7 @@ class MainClass:
             Set.MEO=False
             Set.lastOption=False
             Set.greedy=False
+            Set.Firstgreedy = False
             EmulateFirst=CS()
             results =EmulateFirst.MainScheduler(jobList,Set.resources)
             first.append(results)
@@ -58,6 +61,7 @@ class MainClass:
             Set.MEO=False
             Set.lastOption=True
             Set.greedy=False
+            Set.Firstgreedy = False
             EmulateLast=CS()
             results =EmulateLast.MainScheduler(jobList,Set.resources)
             last.append(results)
@@ -67,9 +71,20 @@ class MainClass:
             Set.MEO = False
             Set.lastOption = False
             Set.greedy = True
+            Set.Firstgreedy = False
             EmulateLast = CS()
             results = EmulateLast.MainScheduler(jobList, Set.resources)
             greedyFirst.append(results)
+
+            # print("\n\n***Main:Emulate First Greedy")
+            Set.firstOptionOnly = False
+            Set.MEO = False
+            Set.lastOption = False
+            Set.greedy = False
+            Set.Firstgreedy = True
+            EmulateLast = CS()
+            results = EmulateLast.MainScheduler(jobList, Set.resources)
+            dakaiGreedy.append(results)
 
 
 
@@ -185,6 +200,29 @@ class MainClass:
         gfmp = ((fm) / tm) * 100
         print("gfmp: %", gfmp)
 
+        avgDakaiGreedyFailed = sum(int(f) for f, s, u, g, a, uM in dakaiGreedy) / float(Set.numberOfIteration)
+        print("\navg DakaiGreedy Failed: %", avgDakaiGreedyFailed)
+        avgDakaiGreedyScaled = sum(int(s) for f, s, u, g, a, uM in dakaiGreedy) / float(Set.numberOfIteration)
+        print("avg DakaiGreedy Scaled: %", avgDakaiGreedyScaled)
+        avgDakaiGreedyUnused = sum(int(u) for f, s, u, g, a, uM in dakaiGreedy) / float(Set.numberOfIteration)
+        print("avg DakaiGreedy Unused: %", avgDakaiGreedyUnused)
+        avgDakaiGreedyUnusedMem = sum(int(uM) for f, s, u, g, a, uM in dakaiGreedy) / float(Set.numberOfIteration)
+        print("avg DakaiGreedy Unused MEM: %", avgDakaiGreedyUnusedMem)
+        avgDakaiGreedyGained = sum(int(g) for f, s, u, g, a, uM in dakaiGreedy) / float(Set.numberOfIteration)
+        print("avg DakaiGreedy Gained Bid: %", avgDakaiGreedyGained)
+        fc = (sum(int(fc) for f, s, u, g, [fc, fm, gc, gm, tc, tm], uM in dakaiGreedy) / float(Set.numberOfIteration))
+        # print("fc: ", fc)
+        tc = (sum(int(tc) for f, s, u, g, [fc, fm, gc, gm, tc, tm], uM in dakaiGreedy) / float(Set.numberOfIteration))
+        # print("tc: ", tc)
+        dfcp = ((fc) / tc) * 100
+        print("gfcp: %", gfcp)
+        fm = (sum(int(fm) for f, s, u, g, [fc, fm, gc, gm, tc, tm], uM in dakaiGreedy) / float(Set.numberOfIteration))
+        # print("fm: ", fm)
+        tm = (sum(int(tm) for f, s, u, g, [fc, fm, gc, gm, tc, tm], uM in dakaiGreedy) / float(Set.numberOfIteration))
+        # print("tm: ", tm)
+        dfmp = ((fm) / tm) * 100
+        print("gfmp: %", gfmp)
+
         print("\nnumber of iteration: ",Set.numberOfIteration,
               "| number of time interval: ", Set.NumberOfTimeInterval,
               "| each interval: ",Set.eachTimeInterval,
@@ -192,7 +230,21 @@ class MainClass:
               "| random Job: ",Set.randJob,
               "| capacity: ",Set.capacity)
 
-        return ([avgMeoFailed,avgMeoGained,avgFirstFailed,avgFirstGained,avgLastFailed,avgLastGained,avggreedyFirstFailed,avggreedyFirstGained,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused,mfcp,mfmp,ffcp,ffmp,lfcp,lfmp,gfcp,gfmp,avgLastUnusedMem,avgFirstUnusedMem,avgMeoUnusedMem,avggreedyFirstUnusedMem],
+        return ([avgMeoFailed,avgMeoGained
+                    ,avgFirstFailed,avgFirstGained
+                    ,avgLastFailed,avgLastGained
+                    ,avggreedyFirstFailed,avggreedyFirstGained
+
+                    ,avgMeoUnused,avgFirstUnused,avgLastUnused,avggreedyFirstUnused
+
+                    ,mfcp,mfmp,ffcp,ffmp,lfcp,lfmp,gfcp,gfmp
+
+                    ,avgLastUnusedMem,avgFirstUnusedMem,avgMeoUnusedMem,avggreedyFirstUnusedMem
+
+                    ,avgDakaiGreedyFailed,avgDakaiGreedyUnused,avgDakaiGreedyUnusedMem,avgDakaiGreedyGained,dfcp,dfmp
+                 ]
+
+                ,
                 ["it:",Set.numberOfIteration,
               "|interval:", Set.NumberOfTimeInterval,
               "|of:",Set.eachTimeInterval,

@@ -32,10 +32,10 @@ class ClassJobCreator:
         for i in range(Set.NumberOfTimeInterval): # Creating Time intervals
             randomCapScale=0
 
-            if i%10==0:
-                randomCapScale= (Set.avgSysLoad+3*Set.fluctuation)#Set.avgSysLoad+(Set.fluctuation*0.75),
+            if i%Set.dakaiX==0:
+                randomCapScale= (Set.dakaiMaxScale)#Set.avgSysLoad+(Set.fluctuation*0.75),
             else:
-                randomCapScale = (Set.avgSysLoad)
+                randomCapScale = (Set.dakaiMinScale)
 
             #randomCapScale = random.uniform(Set.avgSysLoad - Set.fluctuation, Set.avgSysLoad + Set.fluctuation)
             cap = float(randomCapScale*Set.eachTimeInterval*Set.capacity)
@@ -225,43 +225,43 @@ class ClassJobCreator:
                     #print("interval", i, " cap:", cap, " capMEM:", capMem)
 
         """ info on created jobs """
+        if True:
+            for item in joblist[0:4]:
+                if Set.tx:
+                    print(item[4]," :",item)
+            print("number of jobs Created:",len(joblist))
 
-        for item in joblist[0:4]:
-            if Set.tx:
-                print(item[4]," :",item)
-        print("number of jobs Created:",len(joblist))
+            print("random Cap avg: ", 100 * (capSum / float(Set.capMem * Set.duration)))
 
-        print("random Cap avg: ", 100 * (capSum / float(Set.capMem * Set.duration)))
+            sumLoad = 0
+            for item in joblist:
+                sumLoad = sumLoad + (item[1][0][3] * item[1][0][0] * item[1][0][2])
+            print("avg load 1st execs area MEM: ", 100 * (sumLoad / float(Set.capMem  * Set.duration)))
 
-        sumLoad = 0
-        for item in joblist:
-            sumLoad = sumLoad + (item[1][0][3] * item[1][0][0] * item[1][0][2])
-        print("avg load 1st execs area MEM: ", 100 * (sumLoad / float(Set.capMem  * Set.duration)))
+            sumLoad = 0
+            sumTime = 0
+            for item in joblist:
+                sumLoad = sumLoad + (item[1][0][1] * item[1][0][0] * item[1][0][2])
+                sumTime = sumTime + item[1][0][2]
+            print("avg load 1st execs area cPU: ", 100*(sumLoad / float(Set.capacity*Set.duration)))
+            print("avg Time 1st exec: ",( sumTime / float(len(joblist))))
+            sumLoad = 0
+            sumTime = 0
+            for item in joblist:
+                sumLoad = sumLoad + (item[1][1][1] * item[1][1][0] * item[1][1][2])
+                sumTime = sumTime + item[1][1][2]
+            print("avg load 2nd execs CPU: ",100*(sumLoad / float(Set.capacity*Set.duration)))
+            print("avg Time 2nd exec: ",( sumTime / float(len(joblist))))
+            sumLoad = 0
+            sumTime = 0
+            #for item in joblist:
+            #    sumLoad = sumLoad + (item[1][2][1] * item[1][2][0] * item[1][2][2])
+            #    sumTime = sumTime + item[1][2][2]
+            #print("avg load 3rd execs: ", (sumLoad / float(Set.capacity * Set.duration)))
+            #print("avg Time 3rd exec: ", (sumTime / float(len(joblist))))
+            #print("avg Cap: ", capSum/Set.NumberOfTimeInterval)
 
-        sumLoad = 0
-        sumTime = 0
-        for item in joblist:
-            sumLoad = sumLoad + (item[1][0][1] * item[1][0][0] * item[1][0][2])
-            sumTime = sumTime + item[1][0][2]
-        print("avg load 1st execs area cPU: ", 100*(sumLoad / float(Set.capacity*Set.duration)))
-        print("avg Time 1st exec: ",( sumTime / float(len(joblist))))
-        sumLoad = 0
-        sumTime = 0
-        for item in joblist:
-            sumLoad = sumLoad + (item[1][1][1] * item[1][1][0] * item[1][1][2])
-            sumTime = sumTime + item[1][1][2]
-        print("avg load 2nd execs CPU: ",100*(sumLoad / float(Set.capacity*Set.duration)))
-        print("avg Time 2nd exec: ",( sumTime / float(len(joblist))))
-        sumLoad = 0
-        sumTime = 0
-        #for item in joblist:
-        #    sumLoad = sumLoad + (item[1][2][1] * item[1][2][0] * item[1][2][2])
-        #    sumTime = sumTime + item[1][2][2]
-        #print("avg load 3rd execs: ", (sumLoad / float(Set.capacity * Set.duration)))
-        #print("avg Time 3rd exec: ", (sumTime / float(len(joblist))))
-        #print("avg Cap: ", capSum/Set.NumberOfTimeInterval)
-
-        #print(np.average([48,21,87,83,43,60,30,89,106,56,60,30,85,102,51,61,85,96,51,85,29,8,47,75,79,27,45,66,29,69,25,44,56,82,34,50,67,98,15,88,111,67,97,58,15,98,99,78,15,73,29,49,63,57,34,44,51,74,28,43,60,75,33,53,65]))
+            #print(np.average([48,21,87,83,43,60,30,89,106,56,60,30,85,102,51,61,85,96,51,85,29,8,47,75,79,27,45,66,29,69,25,44,56,82,34,50,67,98,15,88,111,67,97,58,15,98,99,78,15,73,29,49,63,57,34,44,51,74,28,43,60,75,33,53,65]))
 
         time.sleep(5*Set.sleepTime)
         return joblist

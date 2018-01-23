@@ -284,7 +284,111 @@ class ClassSchduler:
                             if Set.debugDetail:
                                 print("     current resources: ", self.resources)
 
+            """ First Greedy algorithm"""  # greedy
 
+            if Set.Firstgreedy is True:
+                if once == 0:
+                    print("***************************** First greedy.")
+                    once = 1
+                self.evaluateScaleability = []
+                self.shadowQueue = copy.deepcopy(self.arrivalQueue)
+                for waiting in self.shadowQueue:
+                    self.addressed = False
+                    waiting[self.execs].sort(key=lambda x: x[2],reverse=True)
+                    if Set.debugLevel2:
+                        print(waiting[self.execs])
+
+                    for eachExec in waiting[self.execs]:
+                        if self.addressed is True:
+                            break
+                        if Set.debug:
+                            print("\n     arrival queue head: ", waiting)
+                        ### <<< evaluation
+                        self.evaluateCurrentResource = copy.deepcopy(
+                            self.resources)  # copy resources so changes do not apply for evaluation
+                        self.evaluateCurrentResource.sort(
+                            key=(lambda resource: ClassSchduler.EDsortResourcesEachexec(resource, eachExec)))
+                        """(key=(lambda resource:
+                                                               (
+                                                                   (resource[self.rCore] - (
+                                                                   eachExec[self.VMcore])) ** 2 +
+                                                                   (resource[self.rMem] - (
+                                                                   eachExec[self.mem])) ** 2
+                                                               ) ** (1 / 2.0)
+                                                               ))"""
+                        self.VMs2address = eachExec[self.numVM]
+                        for i in range(self.VMs2address):
+                            # print("VMs2address: ",VMs2address)
+                            for res in self.evaluateCurrentResource:
+                                # print("res: ",res)
+                                if (res[self.rCore] >= (eachExec[self.VMcore]) and res[self.rMem] >= (
+                                eachExec[self.mem])):  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MEM!!!
+                                    self.VMs2address = self.VMs2address - 1
+                                    # print("if b res[rCore]",res[rCore])
+                                    res[self.rCore] = res[self.rCore] - (eachExec[self.VMcore])
+                                    res[self.rMem] = res[self.rMem] - (eachExec[self.mem])
+                                    # print("if a res[rCore]", res[rCore])
+                                    break
+                            # print("for res end res[rCore]", res[rCore])
+                            self.evaluateCurrentResource.sort(
+                                key=(lambda resource: ClassSchduler.EDsortResourcesEachexec(resource, eachExec)))
+                        ### <<< end of evaluation
+                        if self.VMs2address == 0:  # all requested VMs can be addressed
+                            if Set.debugDetail:
+                                print("     current resources: ", self.resources)
+                            if Set.debugLevel2:
+                                print("     addressable job with ID: ", waiting[self.id], " numVMs requested: ",
+                                      eachExec[self.numVM])
+                            # return(True)
+                            # this job is addressable so apply
+                            # repeat the process and put in pool
+                            # update the resources
+                            ### >>> apply
+                            self.evaluateCurrentResource = copy.deepcopy(self.resources)
+                            # print("evaluateCurrentResource Second:",evaluateCurrentResource)
+                            self.evaluateCurrentResource.sort(
+                                key=(lambda resource: ClassSchduler.EDsortResourcesEachexec(resource, eachExec)))
+                            self.VMs2address = eachExec[self.numVM]
+                            for i in range(self.VMs2address):
+                                for res in self.evaluateCurrentResource:
+                                    if (res[self.rCore] >= (eachExec[self.VMcore]) and res[self.rMem] >= (
+                                    eachExec[self.mem])):  # !!!!!!!!!!!!!!!!!!!!!!!!!MEM!!!
+                                        self.VMs2address = self.VMs2address - 1
+                                        # print("if b res[rCore]", res[rCore])
+                                        res[self.rCore] = res[self.rCore] - (eachExec[self.VMcore])
+                                        res[self.rMem] = res[self.rMem] - (eachExec[self.mem])
+                                        # print("if a res[rCore]", res[rCore])
+                                        self.reserved = self.pools[res[self.id]]
+                                        self.reserved.append([eachExec[self.VMcore],
+                                                              eachExec[self.runtime], waiting[self.bid],
+                                                              waiting[self.id], eachExec[self.mem]])
+                                        # print("res[id], reserved",res[id],res,reserved)
+                                        self.pools[res[self.id]] = self.reserved
+                                        break
+                                self.evaluateCurrentResource.sort(key=(
+                                lambda resource: ClassSchduler.EDsortResourcesEachexec(resource,
+                                                                                       eachExec)))  # , reverse=True)
+                            self.evaluateScaleability.append(
+                                waiting)  # this job is addressed and should be evaluated for Scalibility
+                            self.jobsAddressed.append(waiting)
+                            self.collectedBid = self.collectedBid + waiting[self.bid]
+                            # print("     collected bid ",collectedBid)
+                            # self.arrivalQueue.remove(waiting) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! error not exist
+                            for item in self.arrivalQueue:
+                                if item[self.id] == waiting[self.id]:
+                                    self.arrivalQueue.remove(item)
+                            # print("     !2 check Scalability:",evaluateScaleability)
+                            self.resources = copy.deepcopy(self.evaluateCurrentResource)
+                            ### >>> end of apply
+                            if Set.debugDetail:
+                                print("     resources reduced: ", self.resources)
+                            self.addressed = True
+                            break
+                        else:
+                            if Set.debug:
+                                print("     Job not addressable with ID: ", waiting[self.id])
+                            if Set.debugDetail:
+                                print("     current resources: ", self.resources)
 
             """ new algorithm """ # new
             if False:
@@ -328,7 +432,7 @@ class ClassSchduler:
                                              + ( self.avail/float(Set.capacity) )*( (x[self.VMcore]*(1+x[self.numVM]))/float( 16 ) )))#, reverse=True)  # not sorting for now
 
                     self.addressed = False
-                    #waiting[self.execs].sort(key=lambda x: x[2])  # not sorting for now
+
                     if Set.debugLevel2:
                        print(waiting[self.execs])
 
@@ -412,7 +516,7 @@ class ClassSchduler:
                 
 
             """old alg + F L"""""""evaluate and apply addressability of job and put in resource POOL """ # not Greedy
-            if Set.greedy is False:
+            if (Set.greedy and Set.Firstgreedy) is False:
             #if (Set.greedy and Set.MEO ) is False:#
                 if once==0:
                     print("*****************************F or L")
@@ -652,81 +756,82 @@ class ClassSchduler:
 
         """ Printing Results """
 
-        print("\n")
-        self.totalArea=0
-        for res in Set.resources:
-            self.totalArea = self.totalArea + res[self.rCore]
-        self.totalArea= self.totalArea * self.timeStamp
-        self.totalMemArea = 0
-        for res in Set.resources:
-            self.totalMemArea = self.totalMemArea + res[self.rMem]
-        self.totalMemArea = self.totalMemArea * self.timeStamp
+        if True:
+            print("\n")
+            self.totalArea=0
+            for res in Set.resources:
+                self.totalArea = self.totalArea + res[self.rCore]
+            self.totalArea= self.totalArea * self.timeStamp
+            self.totalMemArea = 0
+            for res in Set.resources:
+                self.totalMemArea = self.totalMemArea + res[self.rMem]
+            self.totalMemArea = self.totalMemArea * self.timeStamp
 
-        self.loss=0
-        for x in self.jobsFailed:
-            self.loss=self.loss+x[self.bid]
+            self.loss=0
+            for x in self.jobsFailed:
+                self.loss=self.loss+x[self.bid]
 
-        self.scaled = 0 # deep copy, cannot take length
-        for x in self.jobsScaled:
-            self.scaled = self.scaled + 1
+            self.scaled = 0 # deep copy, cannot take length
+            for x in self.jobsScaled:
+                self.scaled = self.scaled + 1
 
-        failedCPUarea=0
-        failedMEMarea=0
-        gainedCPUarea=0
-        gainedMEMarea=0
-        totalCPU=0
-        totalMEM=0
+            failedCPUarea=0
+            failedMEMarea=0
+            gainedCPUarea=0
+            gainedMEMarea=0
+            totalCPU=0
+            totalMEM=0
 
-        for item in jobList:
-            for failedItem in self.jobsFailed:
-                if item[self.id] == failedItem[self.id]:
-                    failedCPUarea+=item[self.execs][self.head][self.numVM]*item[self.execs][self.head][self.VMcore]*item[self.execs][self.head][self.runtime]
-                    failedMEMarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
-                    break
-            for gainedItem in self.jobsAddressed:
-                if item[self.id]==gainedItem[self.id]:
-                    gainedCPUarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.VMcore] * item[self.execs][self.head][self.runtime]
-                    gainedMEMarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
-                    break
-            """ double check sum of the results calculation by total """
-            totalCPU+=item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.VMcore] * item[self.execs][self.head][self.runtime]
-            totalMEM+=item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
-        area=[failedCPUarea,failedMEMarea,gainedCPUarea,gainedMEMarea,totalCPU,totalMEM]
+            for item in jobList:
+                for failedItem in self.jobsFailed:
+                    if item[self.id] == failedItem[self.id]:
+                        failedCPUarea+=item[self.execs][self.head][self.numVM]*item[self.execs][self.head][self.VMcore]*item[self.execs][self.head][self.runtime]
+                        failedMEMarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
+                        break
+                for gainedItem in self.jobsAddressed:
+                    if item[self.id]==gainedItem[self.id]:
+                        gainedCPUarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.VMcore] * item[self.execs][self.head][self.runtime]
+                        gainedMEMarea += item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
+                        break
+                """ double check sum of the results calculation by total """
+                totalCPU+=item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.VMcore] * item[self.execs][self.head][self.runtime]
+                totalMEM+=item[self.execs][self.head][self.numVM] * item[self.execs][self.head][self.mem] * item[self.execs][self.head][self.runtime]
+            area=[failedCPUarea,failedMEMarea,gainedCPUarea,gainedMEMarea,totalCPU,totalMEM]
 
 
-        if Set.MEO:
-            print(">>>MEO Results")
-        if Set.firstOptionOnly:
-            print(">>>First Options Results")
-        if Set.lastOption:
-            print(">>>last Options Results")
-        if Set.greedy:
-            print(">>>greedy Results")
-        if Set.debugLevel1:
-            print("jobs Addressed: ", len(self.jobsAddressed))
-            print("jobs Failed: " ,len(self.jobsFailed))
-            print("number time Scaled: ",self.scaled)
-            print("collected bid: ", self.collectedBid)
-            print("lost bid: ", self.loss)
-            print("unused CpU area: ",self.unUsedArea)
-            print("unused Mem area: ", self.unUsedMem)
-            print("total area: ", self.totalArea)
-            #print("number of times we scaled:")  #!!! fill
-        self.resources.sort(key=lambda x: x[self.id])
-        print(self.resources)
+            if Set.MEO:
+                print(">>>MEO Results")
+            if Set.firstOptionOnly:
+                print(">>>First Options Results")
+            if Set.lastOption:
+                print(">>>last Options Results")
+            if Set.greedy:
+                print(">>>greedy Results")
+            if Set.debugLevel1:
+                print("jobs Addressed: ", len(self.jobsAddressed))
+                print("jobs Failed: " ,len(self.jobsFailed))
+                print("number time Scaled: ",self.scaled)
+                print("collected bid: ", self.collectedBid)
+                print("lost bid: ", self.loss)
+                print("unused CpU area: ",self.unUsedArea)
+                print("unused Mem area: ", self.unUsedMem)
+                print("total area: ", self.totalArea)
+                #print("number of times we scaled:")  #!!! fill
+            self.resources.sort(key=lambda x: x[self.id])
+            print(self.resources)
 
-        failed=int((len(self.jobsFailed)/float(len(self.jobsFailed)+len(self.jobsAddressed)))*100)
-        scaled= int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100)
-        unused=int((self.unUsedArea / float(self.totalArea))*100)
-        unusedMem = int((self.unUsedMem / float(self.totalMemArea)) * 100)
-        gained=int((self.collectedBid/float(self.loss+self.collectedBid))*100)
+            failed=int((len(self.jobsFailed)/float(len(self.jobsFailed)+len(self.jobsAddressed)))*100)
+            scaled= int(self.scaled / float(len(self.jobsFailed) + len(self.jobsAddressed))*100)
+            unused=int((self.unUsedArea / float(self.totalArea))*100)
+            unusedMem = int((self.unUsedMem / float(self.totalMemArea)) * 100)
+            gained=int((self.collectedBid/float(self.loss+self.collectedBid))*100)
 
-        if Set.debug:
-            print("% Job Failed:",failed )
-            print("% Job Scaled: ", scaled)
-            print("% unused area: ", unused)
-            print("% gained bid: ",gained)
-        print("area:",area)
+            if Set.debug:
+                print("% Job Failed:",failed )
+                print("% Job Scaled: ", scaled)
+                print("% unused area: ", unused)
+                print("% gained bid: ",gained)
+            print("area:",area)
 
         return ([failed,scaled,unused,gained,area,unusedMem])
 
