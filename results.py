@@ -65,7 +65,7 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
 
     """ generate normal workload """
 
-    for loadRatio in range(40,100+Set.loadInc,Set.loadInc): ############################################################# load
+    for loadRatio in range(80,140+Set.loadInc,Set.loadInc): ############################################################# load
         Set.avgSysLoad=loadRatio/100.0
         #print("Set.avgSysLoad",Set.avgSysLoad)
 
