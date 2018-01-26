@@ -155,7 +155,7 @@ class ClassSchduler:
             """ Sorting arrivalQueue """
 
             #Sorted Queue
-            if Set.fx:#Set.greedy is True:
+            if Set.tx:
                 self.maxBidInQueue=0
                 for item in self.arrivalQueue:
                     if item[self.bid]>self.maxBidInQueue:
@@ -169,7 +169,7 @@ class ClassSchduler:
                                              )
                                        ,reverse=True )
             #print(arrivalQueue)
-            if Set.tx:#Set.greedy is False:
+            if Set.fx:
                 self.maxBidInQueue=0
                 for item in self.arrivalQueue:
                     if item[self.bid]>self.maxBidInQueue:
