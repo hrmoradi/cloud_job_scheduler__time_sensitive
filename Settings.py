@@ -16,7 +16,7 @@ sleepTime =0.0
 
 
 """ Main Constants"""
-numberOfIteration = 3
+numberOfIteration = 5
 spark=True ########################################################## !!!!!!!!!!!!!!!!!!!!!!
 dakaiX=0
 dakaiMinScale=0
