@@ -101,7 +101,7 @@ class ClassSchduler:
                     while ((len(self.moveToQueu[self.execs]))>1):
                         #print("b",self.moveToQueu)
                         del self.moveToQueu[self.execs][0]
-                        #print("a",self.moveToQueu)
+                    #print("l a",self.moveToQueu)
                     if Set.debugLevel2:
                         print("last option: ", self.moveToQueu)
                 if Set.firstOptionOnly: ##################################### for FIRST option just keeping last execution option
@@ -109,7 +109,7 @@ class ClassSchduler:
                     while len(self.moveToQueu[self.execs])>1:
                         #print("b",self.moveToQueu)
                         del self.moveToQueu[self.execs][1]
-                        #print("a", self.moveToQueu)
+                    #print("f a", self.moveToQueu)
                     if Set.debugLevel2:
                         print("First option: ", self.moveToQueu)
                 self.arrivalQueue.append(self.moveToQueu)
@@ -164,6 +164,8 @@ class ClassSchduler:
                         self.maxBidInQueue=item[self.bid]
                 if Set.debugDetail:
                     print("max bid in queue: ",self.maxBidInQueue)
+                #if ((Set.firstOptionOnly or Set.lastOption) and (len(self.arrivalQueue)!=0)):
+                #    print("self.arrivalQueue[0]", self.arrivalQueue[0])
                 self.arrivalQueue.sort(key=( lambda req:
                                              ClassSchduler.Fi(req,self.timeStamp)
                                              )
@@ -910,6 +912,8 @@ class ClassSchduler:
             temp=x[bid]/float(ClassSchduler.minSlope(x[execs],int(pointer))*(timeStamp+x[deadline]-x[arrival])*(x[execs][pointer][runtime])*ClassSchduler.minResourceUsageRation(x[execs],int(pointer))+1)
             if temp>max:
                 max=temp
+            #if Set.firstOptionOnly or Set.lastOption:
+            #    print("len(x[execs]):", len(x[execs]),x[execs][pointer],x[execs][pointer-1])
         return(max)
 
     def minSlope(execsArray,pointer):

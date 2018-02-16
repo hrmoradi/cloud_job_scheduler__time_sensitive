@@ -8,7 +8,7 @@ import SchedulerEmulator.Main as Mainfile
 location = np.arange(7)
 #load=["40-160","50-170","60-180","70-190","80-200","90-210","100-220 [3-1]"]
 load=["80","90","100","110","120","130","140"]
-
+Set.Spark=False
 
 
 """ Start of automated result generation """
@@ -139,10 +139,10 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         plt.yticks(np.arange(0, 75, 5))
         plt.ylabel("% Discarded Core*time Area")
         plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+        plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
         title4Plot = 'Discarded Core*time  '  # +title
         title4Plot+=y
-        plt.title(title4Plot)
+        #plt.title(title4Plot)
         # plt.show()
         plt.savefig(Set.add+ clusterString[ pointer] +y+ "-discarded-CoreTimePercentage.eps")
         plt.clf()
@@ -157,10 +157,10 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         plt.yticks(np.arange(0, 75, 5))
         plt.ylabel("% Discarded Mem*time Area")
         plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+        plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
         title4Plot = 'Discarded Mem*time   '  # +title
         title4Plot += y
-        plt.title(title4Plot)
+        #plt.title(title4Plot)
         # plt.show()
         plt.savefig(Set.add+ clusterString[pointer] +y+ "-discarded-MemTimePercentage.eps")
         plt.clf()
@@ -172,16 +172,18 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         plt.bar(location+0.1, discardedDakai, align="center", width=0.1, color="r")
         plt.bar(location + 0.2, discardedMEO, align="center", width=0.1, color="springgreen")
         plt.xticks(location, load)
-        plt.yticks(np.arange(0, 55, 5))
+        plt.yticks(np.arange(0, 75, 5))
         plt.ylabel("% Discarded Jobs")
         plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+        plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
         title4Plot= 'Discarded JOBS   '#+title
         title4Plot += y
-        plt.title(title4Plot)
+        #plt.title(title4Plot)
         #plt.show()
         plt.savefig(Set.add+ clusterString[pointer] +y+ "-discarded-Job-Percentage.eps")
         plt.clf()
+        print("\n\n\n")
+        print("find me discarded barchart: ",discardedLast,discardedFirst,discardedgreedyFirst,discardedDakai,discardedMEO)
 
         """ Gained benefit line"""
         plt.plot(location, bidLast, '.-', color="lightcoral", linewidth=0.4)
@@ -190,16 +192,18 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         plt.plot(location, bidDakai, '.-', color="r", linewidth=0.4)
         plt.plot(location, bidMEO, 'x-', color="springgreen", linewidth=0.4)
         plt.xticks(location, load)
-        plt.yticks(np.arange(0, 105, 5))
+        plt.yticks(np.arange(40, 105, 5))
         plt.ylabel("% Achived Benefit")
         plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+        plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
         title4Plot = 'Gained Benefit   '# + title
         title4Plot += y
-        plt.title(title4Plot)
+        #plt.title(title4Plot)
         #plt.show()
         plt.savefig(Set.add+clusterString[pointer] +y+"-gained-Bid-Percentage.eps")
         plt.clf()
+        print("\n\n\n")
+        print("find me Gained benefit line: ", bidLast, bidFirst, bidgreedyFirst, bidDakai, bidMEO)
 
         """ Unused CPU Barchart """
         plt.bar(location - 0.2, unusedLast, align="center", width=0.1, color="lightcoral")
@@ -209,12 +213,12 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         plt.bar(location + 0.2, unusedMEO, align="center", width=0.1, color="springgreen")
         plt.xticks(location, load)
         plt.yticks(np.arange(0, 55, 5))
-        plt.ylabel("% Unused Area")
+        plt.ylabel("% Unused CPU Area")
         plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+        plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
         title4Plot = 'Unused Area   '# + title
         title4Plot += y
-        plt.title(title4Plot)
+        #plt.title(title4Plot)
         #plt.show()
         plt.savefig(Set.add+clusterString[pointer] +y+ "-unusedArea-CPU-Percentage.eps")
         plt.clf()
@@ -229,10 +233,10 @@ for cluster in  [Set.LargeCluster]:#,Set.MediumCluster, Set.SmallCluster]: #####
         plt.yticks(np.arange(0, 55, 5))
         plt.ylabel("% Unused Mem Area")
         plt.xlabel("Load")
-        plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+        plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
         title4Plot = 'Unused Mem Area   '  # + title
         title4Plot += y
-        plt.title(title4Plot)
+        #plt.title(title4Plot)
         # plt.show()
         plt.savefig(Set.add + clusterString[pointer] +y+ "-unusedArea-MEM-Percentage.eps")
         plt.clf()

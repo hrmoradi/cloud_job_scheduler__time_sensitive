@@ -11,7 +11,7 @@ load=["2-1","4-1","6-1","8-1","10-1","20-1"]
 
 minLoadArray=[.20,.30,.40,.50,.60,.70,.80,.50,.60,.70,.80,.90]
 maxLoadArray=[1.80,1.70,1.60,1.50,1.40,1.30,1.20,1.00,1.20,1.40,1.60,1.80]
-
+Set.Spark=True
 
 """ Start of automated result generation """
 for i in range(len(minLoadArray)):
@@ -144,11 +144,11 @@ for i in range(len(minLoadArray)):
             plt.xticks(location, load)
             plt.yticks(np.arange(0, 55, 5))
             plt.ylabel("% Discarded Core*time Area")
-            plt.xlabel("Load")
-            plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+            plt.xlabel("Spike Pattern")
+            plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
             title4Plot = 'Discarded Core*time  '  # +title
-            title4Plot += y
-            plt.title(title4Plot)
+            title4Plot += ""#y
+            #plt.title(title4Plot)
             # plt.show()
             plt.savefig(Set.add + clusterString[pointer] + y + "-discarded-CoreTimePercentage.eps")
             plt.clf()
@@ -162,11 +162,11 @@ for i in range(len(minLoadArray)):
             plt.xticks(location, load)
             plt.yticks(np.arange(0, 55, 5))
             plt.ylabel("% Discarded Mem*time Area")
-            plt.xlabel("Load")
-            plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+            plt.xlabel("Spike Pattern")
+            plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
             title4Plot = 'Discarded Mem*time   '  # +title
-            title4Plot += y
-            plt.title(title4Plot)
+            title4Plot += ""#y
+            #plt.title(title4Plot)
             # plt.show()
             plt.savefig(Set.add + clusterString[pointer] + y + "-discarded-MemTimePercentage.eps")
             plt.clf()
@@ -180,14 +180,17 @@ for i in range(len(minLoadArray)):
             plt.xticks(location, load)
             plt.yticks(np.arange(0, 55, 5))
             plt.ylabel("% Discarded Jobs")
-            plt.xlabel("Load")
-            plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+            plt.xlabel("Spike Pattern")
+            plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
             title4Plot = 'Discarded JOBS   '  # +title
-            title4Plot += y
-            plt.title(title4Plot)
+            title4Plot += ""#y
+            #plt.title(title4Plot)
             # plt.show()
             plt.savefig(Set.add + clusterString[pointer] + y + "-discarded-Job-Percentage.eps")
             plt.clf()
+            print("\n\n\n")
+            print("find me discarded barchart: ",y, discardedLast, discardedFirst, discardedgreedyFirst, discardedDakai,
+                  discardedMEO)
 
             """ Gained benefit line"""
             plt.plot(location, bidLast, '.-', color="lightcoral", linewidth=0.4)
@@ -196,16 +199,18 @@ for i in range(len(minLoadArray)):
             plt.plot(location, bidDakai, '.-', color="r", linewidth=0.4)
             plt.plot(location, bidMEO, 'x-', color="springgreen", linewidth=0.4)
             plt.xticks(location, load)
-            plt.yticks(np.arange(0, 105, 5))
+            plt.yticks(np.arange(40, 105, 5))
             plt.ylabel("% Achived Benefit")
-            plt.xlabel("Load")
-            plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+            plt.xlabel("Spike Pattern")
+            plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
             title4Plot = 'Gained Benefit   '  # + title
-            title4Plot += y
-            plt.title(title4Plot)
+            title4Plot += ""#y
+            #plt.title(title4Plot)
             # plt.show()
             plt.savefig(Set.add + clusterString[pointer] + y + "-gained-Bid-Percentage.eps")
             plt.clf()
+            print("\n\n\n")
+            print("find me Gained benefit line: ",y, bidLast, bidFirst, bidgreedyFirst, bidDakai, bidMEO)
 
             """ Unused CPU Barchart """
             plt.bar(location - 0.2, unusedLast, align="center", width=0.1, color="lightcoral")
@@ -215,12 +220,12 @@ for i in range(len(minLoadArray)):
             plt.bar(location + 0.2, unusedMEO, align="center", width=0.1, color="springgreen")
             plt.xticks(location, load)
             plt.yticks(np.arange(0, 105, 5))
-            plt.ylabel("% Unused Area")
-            plt.xlabel("Load")
-            plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
-            title4Plot = 'Unused Area   '  # + title
-            title4Plot += y
-            plt.title(title4Plot)
+            plt.ylabel("% Unused CPU Area")
+            plt.xlabel("Spike Pattern")
+            plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
+            title4Plot = 'Unused CPU Area   '  # + title
+            title4Plot += ""#y
+            #plt.title(title4Plot)
             # plt.show()
             plt.savefig(Set.add + clusterString[pointer] + y + "-unusedArea-CPU-Percentage.eps")
             plt.clf()
@@ -234,11 +239,11 @@ for i in range(len(minLoadArray)):
             plt.xticks(location, load)
             plt.yticks(np.arange(0, 105, 5))
             plt.ylabel("% Unused Mem Area")
-            plt.xlabel("Load")
-            plt.legend(["Thickest Option", "First Option", "Thickest Greedy", "First Greedy", "Resource Scale Up"])
+            plt.xlabel("Spike Pattern")
+            plt.legend(["TSRA-Last", "TSRA-First", "MEO-Greedy-Last", "MEO-Greedy-First", "MEO-Adaptive"])
             title4Plot = 'Unused Mem Area   '  # + title
-            title4Plot += y
-            plt.title(title4Plot)
+            title4Plot += ""#y
+            #plt.title(title4Plot)
             # plt.show()
             plt.savefig(Set.add + clusterString[pointer] + y + "-unusedArea-MEM-Percentage.eps")
             plt.clf()
